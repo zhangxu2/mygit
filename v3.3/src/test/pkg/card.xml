@@ -1,0 +1,10 @@
+<CBM 	NAME="LSN1" >
+        <TYPE_ALYZ>
+                <ANALYZE>
+                        <ITEM NAME="card_processor" CFG="cardin.xml" LIB="libjzcardpack.so" FUNCTION="unpack_jzcard" />
+                </ANALYZE>
+                <INTEGRATE>
+                        <ITEM NAME="card_processor" CFG="cardin.xml" LIB="libjzcardpack.so" FUNCTION="pack_jzcard" />
+                </INTEGRATE>
+        </TYPE_ALYZ>
+</CBM>

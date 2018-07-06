@@ -1,0 +1,25 @@
+<?xml version= "10" encoding= "GBK" ?>
+<CBM>
+	<TYPE_ALYZ>
+		<ANALYZE>
+			<ITEM NAME="sep_processor" CFG="sep.xml" >
+				<CHECK BEGIN="8" LENGTH="2" INCLUDE="US" FUNCTION="libcheck.so/check_sep_in" />
+			</ITEM>
+			<ITEM NAME="8583_processor" CFG="accsys.xml" >
+				<CHECK BEGIN="8" LENGTH="2" INCLUDE="AS" FUNCTION="libcheck.so/check_8583_in" />
+			</ITEM>
+			<ITEM NAME="xml_processor" CFG="txml.xml" />
+		</ANALYZE>
+		<INTEGRATE>
+			<ITEM NAME="sep_processor" CFG="sep.xml" >
+				<CHECK NAME="#chnl_no" INCLUDE="US" FUNCTION="libcheck.so/check_sep_out" />
+			</ITEM>
+			<ITEM NAME="8583_processor" CFG="accsys.xml" >
+				<CHECK NAME="#chnl_no" INCLUDE="AS" FUNCTION="libcheck.so/check_8583_out" />
+			</ITEM>
+			<ITEM NAME="xml_processor" CFG="txml.xml" >
+				<CHECK NAME="#chnl_no" INCLUDE="AA" />
+			</ITEM>
+                </INTEGRATE>
+	</TYPE_ALYZ>
+</CBM>

@@ -1,0 +1,6 @@
+
+<ITEM NAME="#AA" LOOP="1" SEP="###">
+	<SUB NAME="#aa" SEP="|||" />
+	<SUB NAME="#bb" SEP="|||" />
+	<SUB NAME="#cc" SEP="|||" />
+</ITEM>

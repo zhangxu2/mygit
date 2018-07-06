@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service>
+<sys-header>
+<data name="SYS_HEAD">
+<struct>
+<data name="MODULE_ID">
+<field scale="0" type="string" length="2">RB</field>
+</data>
+<data name="TRAN_TIMESTAMP">
+<field scale="0" type="string" length="9">190055745</field>
+</data>
+<data name="SOURCE_BRANCH_NO">
+<field scale="0" type="string" length="0">3000</field>
+</data>
+<data name="SOURCE_TYPE">
+<field scale="0" type="string" length="2">CB</field>
+</data>
+<data name="TRAN_DATE">
+<field scale="0" type="string" length="8">20210222</field>
+</data>
+<data name="MESSAGE_TYPE">
+<field scale="0" type="string" length="4">1400</field>
+</data>
+<data name="MESSAGE_CODE">
+<field scale="0" type="string" length="4">6013</field>
+</data>
+<data name="SERVICE_CODE">
+<field scale="0" type="string" length="8">SVR_CARD</field>
+</data>
+<data name="BRANCH_ID">
+<field scale="0" type="string" length="6">351001</field>
+</data>
+<data name="PROGRAM_ID">
+<field scale="0" type="string" length="5">CB</field>
+</data>
+<data name="USER_LANG">
+<field scale="0" type="string" length="7">CHINESE</field>
+</data>
+<data name="SERVER_ID">
+<field scale="0" type="string" length="9">127.0.0.1</field>
+</data>
+<data name="AUTH_FLAG">
+<field scale="0" type="string" length="1">M</field>
+</data>
+<data name="USER_ID">
+<field scale="0" type="string" length="30">WY35100101</field>
+</data>
+<data name="TRAN_MODE">
+<field scale="0" type="string" length="6">ONLINE</field>
+</data>
+<data name="SEQ_NO">
+<field scale="0" type="string" length="7">54321234</field>
+</data>
+</struct>
+</data>
+</sys-header>
+<app-header>
+<data name="APP_HEAD">
+<struct>
+<data name="PAGE_START">
+<field scale="0" type="string" length="1">0</field>
+</data>
+<data name="PGUP_OR_PGDN">
+<field scale="0" type="string" length="1">0</field>
+</data>
+<data name="CURRENT_NUM">
+<field scale="0" type="string" length="1">0</field>
+</data>
+<data name="TOTAL_NUM">
+<field scale="0" type="string" length="2">-1</field>
+</data>
+<data name="PAGE_END">
+<field scale="0" type="string" length="1">0</field>
+</data>
+</struct>
+</data>
+</app-header>
+<local-header>
+<data name="LOCAL_HEAD">
+<struct/>
+</data>
+</local-header>
+<body>
+<data name="CHECK_OPTION">
+<field scale="0" type="string" length="4">0001</field>
+</data>
+<data name="CCY">
+<field scale="0" type="string" length="3">CNY</field>
+</data>
+<data name="CARD_NO">
+<field scale="0" type="string" length="19">6212163510800212561</field>
+</data>
+</body>
+</service>

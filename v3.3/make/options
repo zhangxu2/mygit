@@ -1,0 +1,65 @@
+#!bin/sh
+
+help=no
+SW_JH=no
+SW_OPT=yes
+
+VERSION=
+SW_VERSION=no			#OS version
+ORACLE_HOMEN=			#ORACLE database path	
+TUXDIRN=			#TUXEDO path
+INFORMIXDIRN=			#INFORMIX database path
+MQDIRN=				#MQ path
+TEDIRN=				#TongEasy path
+
+MAKEDIR='$(HOME)/esw/make'
+SW_ENV="$SWHOME/make/sw.env"
+
+#opt=
+
+for option
+do
+#	opt="$opt `echo $option | sed -e \"s/\(--[^=]*=\)\(.* .*\)/\1'\2'/\"`"
+	case "$option" in
+		-*=*)	value=`echo "$option" | sed -e 's/[-_a-zA-Z0-9]*=//'` ;;
+		*)	value=""
+	esac
+	
+	case "$option" in
+		--v=*)				VERSION="$value"     ;;
+		--b=*)         BIT="$value"					;;
+		--help)					help=yes		;;
+		-y)					SW_JH=yes		;;
+		-l)					SW_OPT=yes		;;
+		--version)				SW_VERSION=yes		;;
+		--ora-path=*)				ORACLE_HOMEN="$value"	;;
+		--tux-path=*)				TUXDIRN="$value"	;;
+		--inf-path=*)				INFORMIXDIRN="$value"	;;
+		--mq-path=*)				MQDIRN="$value"		;;
+		--te-path=*)				TEDIRN="$value"		;;
+
+		*)
+                        echo "$0: error: invalid option \"$option\""
+                        exit 1
+                ;;
+
+        esac
+done
+
+
+if [ $help = yes ]; then
+cat << END
+
+	--help				print help message
+	--y				lookover all altertion	
+	--l				lookover other	altertion
+	--version			OS version BIT
+	--ora-path=PATH			your oracle database install path
+	--tux-path=PATH			your TUXEDO install path
+	--inf-path=PATH			your informix database install path
+	--mq-path=PATH			your MQ install path
+	--te-path=PATH			your TongEasy install path
+
+END
+	exit 1
+fi

@@ -1,0 +1,31 @@
+#!/bin/sh
+
+if [ ! -d "$SWHOME/agent_lib" ];then
+	mkdir $SWHOME/agent_lib
+fi
+
+SRCLIST="
+agent/comm
+agent/admin
+agent/main
+agent/pol
+agent/tx
+"
+for ITEM in $SRCLIST
+do
+	CURPATH=$SWHOME/src/$ITEM
+	echo $CURPATH
+	cd $CURPATH
+	make clean
+	echo "system: $SW_SYSTEM"
+	echo "build: make "
+	make
+	if [ $? -ne 0 ];then
+		echo "±àÒë[$CURPATH]³ö´í,ÊÇ·ñ¼ÌÐø±àÒë(y/n)"
+		read answer
+		if [ "$answer" = "n" ];then
+			exit 1
+		fi
+	fi
+	
+done

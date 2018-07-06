@@ -1,0 +1,18 @@
+include $(SWHOME)/make/sw.env
+
+USERLIB=-lswbase -luni -ldl
+TARGET=uni_cluster_cfg_test
+OBJS=uni_cluster_cfg_test.o
+
+ALL:$(TARGET)
+$(TARGET):$(OBJS)
+	$(CC) $(LFLAGS)  -o  $@ $(OBJS) $(APPLIBDIR) $(USERLIB)
+	@rm -f *.o
+	@echo "$@ is OK !"
+
+.SUFFIXES: .c .o
+.c.o:
+	$(CC) -v $(CFLAGS)  $(APPINCLUDE) -I$(SWHOME)/src/uniform -c $*.c
+
+clean:
+	rm -f *.o $(TARGET)

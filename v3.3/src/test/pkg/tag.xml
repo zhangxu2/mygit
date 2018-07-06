@@ -1,0 +1,49 @@
+<CBM>
+	<ANALYZE>
+		<HEAD>
+			<ITEM NAME="#beginmark" TYPE="a3" />
+			<ITEM NAME="#verid" TYPE="a1" />
+			<ITEM NAME="#mesglen" TYPE="n6" />
+			<ITEM NAME="#mesgid" TYPE="a5" />
+			<ITEM NAME="#mesgreqno" TYPE="a8" />
+			<ITEM NAME="#endmark" TYPE="a1" />
+		</HEAD>
+		<PACKAGE>
+			<ITEM NAME="#traceno" ISTAG="1" />
+		</PACKAGE>
+		<PACKAGE>
+			<ITEM NAME="#tailbmark" TYPE="a3"  CONST="{C:" />
+			<ITEM NAME="#tailbody"  TYPE="a6" BLANK="1" />
+			<ITEM NAME="#tailemark" TYPE="a1"  CONST="}" />
+		</PACKAGE>
+	</ANALYZE>
+	<INTEGRATE>
+		<HEAD>
+			<ITEM NAME="#beginmark" TYPE="a3" CONST="{1:" />
+			<ITEM NAME="#verid" TYPE="a1" CONST="1" />
+			<ITEM NAME="#mesglen" TYPE="n6" FLAG="1" />
+			<ITEM NAME="#mesgid" TYPE="a5" FLAG="1" BLANK="1" />
+			<ITEM NAME="#mesgreqno" TYPE="a8" FLAG="1" BLANK="1" />
+			<ITEM NAME="#endmark" TYPE="a1" CONST="}" />
+		</HEAD>
+		<PACKAGE CHECK="$fileflag?1" >
+			<ITEM NAME="#bodybmark" TYPE="a3" CONST="{2:" />
+			<ITEM TAG="CLZ" NAME="#traceno"  TYPE="n20" BLANK="1" />
+			<ITEM TAG="WD0" NAME="#workdate" TYPE="a8"  BLANK="1" />
+			<ITEM TAG="SBN" NAME="#sndbrno"  TYPE="a12" BLANK="1" />
+			<ITEM TAG="DTN" NAME="#detcnt"   TYPE="n4"  BLANK="1" />
+			<ITEM TAG="DET" NAME="#detail" />
+			<ITEM NAME="#bodyemark" TYPE="a1" CONST="}" />
+		</PACKAGE>
+		<PACKAGE CHECK="$fileflag=1" >
+			<ITEM NAME="#bodybmark" TYPE="a3" CONST="{F:" />
+			<ITEM NAME="$filename"  TYPE="n20" BLANK="1" />
+			<ITEM NAME="#bodyemark" TYPE="a1" CONST="}" />
+		</PACKAGE>
+		<PACKAGE>
+			<ITEM NAME="#tailbmark" TYPE="a3"  CONST="{C:" />
+			<ITEM NAME="#tailbody"  TYPE="a6" FLAG="1" BLANK="1" />
+			<ITEM NAME="#tailemark" TYPE="a1"  CONST="}" />
+		</PACKAGE>
+	</INTEGRATE>
+</CBM>

@@ -1,0 +1,146 @@
+#include "db_data_type.h"
+EXEC SQL INCLUDE sqlca;
+
+int db_ora_open(void *src, void **_cntx)
+{
+	EXEC SQL BEGIN DECLARE SECTION;
+	char	usrname[32];
+	char	passwd[32];
+	char	sid[32];
+	EXEC SQL END DECLARE SECTION;
+	db_data_src_t	*source = NULL;
+	
+	if (src == NULL)
+	{
+		printf("[%s][%d] Param error!", __FILE__, __LINE__);
+		return -1;
+	}
+	source = (db_data_src_t *)src;
+	
+	memset(usrname, 0x0, sizeof(usrname));
+	memset(passwd, 0x0, sizeof(passwd));
+	memset(sid, 0x0, sizeof(sid));
+	strcpy(usrname, source->usrname);
+	strcpy(passwd, source->passwd);
+	strcpy(sid, source->svrname);
+
+	if (sid[0] == '\0')
+	{
+		EXEC SQL CONNECT :usrname identified by :passwd;
+	}
+	else
+	{
+		EXEC SQL CONNECT :usrname identified by :passwd using :sid;
+	}
+	if (sqlca.sqlcode)
+	{
+		printf("[%s][%d] Connect db error! sqlcode=[%d]", __FILE__, __LINE__, sqlca.sqlcode);
+		return -1;
+	}
+	
+	return 0;
+}
+
+int db_ora_commit(void *_cntx)
+{
+	EXEC SQL COMMIT WORK ;
+	
+	return 0;
+}
+
+int db_ora_rollback(void *_cntx)
+{
+	EXEC SQL ROLLBACK WORK;
+	return 0;
+}
+
+int db_ora_close(void *_cntx)
+{
+	EXEC SQL COMMIT WORK RELEASE;
+	return 0;
+}
+
+int db_ora_non_query(const char *sql, void *_cntx)
+{
+	return 0;
+}
+
+int db_ora_update_by_rowid(const char *_sql, const char *rowid, void *_cntx)
+{
+	return 0;
+}
+
+int db_ora_single_query(const char *sql, void *_cntx)
+{
+	return 0;
+}
+
+int db_ora_mul_query(const char *sql, int rows, void *_cntx)
+{
+	return 0;
+}
+
+int db_ora_fetch(void *_cntx)
+{
+	return 0;
+}
+
+int db_ora_mfetch(const char *alias, void *_cntx)
+{
+	return 0;
+}
+
+int db_ora_clo_fetch(void *_cntx) 
+{
+	return 0;
+}
+
+int db_ora_del_all_conn(void *_cntx) 
+{
+	return 0;
+}
+
+char *db_ora_get_col_value(int rows, int col, void *_cntx)
+{
+	return NULL;
+}
+
+int db_ora_get_col_type(int col, void *_cntx)
+{
+	return 0;
+}
+
+char* db_ora_get_value_byname(int rows, const char *name, void *_cntx)
+{
+	return NULL;
+}
+
+char *db_ora_get_data_and_name(int rowno, int colno, char *name, int size, void *_cntx)
+{
+	return NULL;
+}
+
+int db_ora_set_alias(void *_cntx, const char *name, const void *value, int length)
+{
+	return 0;
+}
+
+const void *db_ora_get_alias(void *_cntx, const char *name)
+{
+	return NULL;
+}
+
+int db_ora_delete_alias(void *_cntx, const char *name)
+{
+	return 0;
+}
+
+int db_ora_delete_all_alias(void *_cntx)
+{
+	return 0;
+}
+
+int db_ora_conn_detect(void *_cntx)
+{
+	return 1;
+}

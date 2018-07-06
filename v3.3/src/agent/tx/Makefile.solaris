@@ -1,0 +1,23 @@
+include $(SWHOME)/make/agtenv
+USERLIB = -lswbase -losbase -lpthread -lswpack -lswlsn -ldl -luni  -ludbc -lagent_pub
+
+TARGETS:sh=ls flw_sp*.c|sed 's/\.c/\.so/g
+OBJS:sh=ls flw_sp*.c|sed 's/\.c/\.o/g
+
+all: $(TARGETS) clean
+
+$(TARGETS):$(OBJS)
+
+.SUFFIXES: .c .o .so
+.c.o:
+	$(CC) $(CFLAGS) $(APPINCLUDE) -I../include -I$(SWHOME)/src/uniform -c $*.c
+.c.so:
+	$(CC) $(GFLAGS) -o $*.so $*.o $(APPLIBDIR) $(USERLIB) $(COMMLIB)
+	rm -f $(AGTLIBDIR)/$@
+	@rm -f $(AGTLIBDIR)/$@.$(VERSION)
+	mv $@ $(AGTLIBDIR)/$@.$(VERSION)
+	@ln -s $@.$(VERSION) $(AGTLIBDIR)/$@
+	@echo "$* is ok!"
+
+clean:
+	rm -f *.o *.so

@@ -1,0 +1,418 @@
+#!/bin/sh
+
+. $SWHOME/make/inits
+. $SWHOME/make/options
+
+if [ -n "$HTTPSSL" ];then
+	echo "Does your openssl installs sysdir[Y/N]?"
+	read ss
+	if [ "$ss" = "N" -o "$s" = "n" ];then
+		echo "please input install path"
+		read dd
+		OPENSSLINC="-I$dd"
+	fi
+	SSL="-lssl"
+fi
+if test -z "$SW_PLATFORM"; then
+        echo "checking for OS"
+        
+        SW_SYSTEM=`uname -s 2>/dev/null`
+        SW_RELEASE=`uname -r 2>/dev/null`
+        SW_MACHINE=`uname -m 2>/dev/null`
+        echo "+ $SW_SYSTEM $SW_RELEASE $SW_MACHINE"
+
+        SW_PLATFORM="$SW_SYSTEM:$SW_RELEASE:$SW_MACHINE"
+        case "$SW_SYSTEM" in
+                MINGW32_*)
+                SW_PLATFORM=win32
+        ;;
+        esac
+
+else 
+        echo "building for $SW_PLATFORM"
+        SW_SYSTEM=$SW_PLATFORM
+fi
+
+echo "checking for $SW_SYSTEM specific features"
+if [ -n $SW_SYSTEM ]; then
+        SW_SYSTEM=`echo $SW_SYSTEM | tr [A-Z] [a-z]`
+        BUILD_SYSTEM=`echo $SW_SYSTEM | tr [A-Z] [a-z]`
+fi
+
+DATAFLAG="#define __NODB__ "
+DDATAFLAG=" -D__NODB__ "
+
+for ITEM in $DIRLIST
+do
+	case $ITEM in
+	INFORMIXDIR|ORACLE_HOME|DB2_HOME)
+		DATAFLAG=
+		DDATAFLAG=
+	;;
+	esac
+done
+
+DFIS_CHECK()
+{
+
+if [ -z "$DFIS_INCS" -a -z "$DFIS_FUNS" ]
+then
+	echo "        not set DFIS_INCS and DFIS_FUNS "
+	DFIS_RET=1
+	return 1
+fi
+
+cat << END > $SWHOME/make/ctest.c
+$DFIS_INCS
+
+int main() {
+	$DFIS_FUNS
+	return 0;
+}
+END
+
+DFIS_INCS=
+DFIS_FUNS=
+
+rm -f $SWHOME/make/ctest
+which cc >> /dev/null
+if [ $? -eq 0 ];then
+	cc -o $SWHOME/make/ctest $SWHOME/make/ctest.c $DFIS_CMP  >> /dev/null 2>&1
+else
+	gcc -o $SWHOME/make/ctest $SWHOME/make/ctest.c $DFIS_CMP  >> /dev/null 2>&1
+fi
+
+DFIS_CMP=
+
+if [ -x $SWHOME/make/ctest ]
+then
+	echo "        compile sucess! now test the program..."
+	if $SWHOME/make/ctest 2>&1
+	then
+		echo "        program runing sucess"
+		DFIS_RET=0;
+		rm -rf $SWHOME/make/ctest*
+		return 0;
+	else
+		echo "        program runing failed"
+		DFIS_RET=1;
+		rm -rf $SWHOME/make/ctest*
+		return 1;
+	fi
+else
+	echo "        complie failed! "
+	DFIS_RET=1;
+	rm -rf $SWHOME/make/ctest*
+	return 1;
+fi
+}
+
+CTPE=
+echo "checking for C99 variadic macros start"
+DFIS_INCS=" #include <sys/types.h>
+	#include <stdio.h>
+	#define var(dummy, ...)  sprintf(__VA_ARGS__) "
+
+DFIS_FUNS=" char  buf[30]; buf[0] = '0';
+                          var(0, buf, \"%d\", 1);
+                          if (buf[0] != '1') return 1;"
+DFIS_CHECK
+
+if [ "$DFIS_RET" == "0" ]
+then
+	echo "checking for C99 variadic macros found"
+	CTPE="#define SW_HAVE_C99_VARIADIC_MACROS 1 "
+	DCTPE=" -DSW_HAVE_C99_VARIADIC_MACROS=1 "
+else
+	echo "checking for C99 variadic macros not found"
+fi
+echo "checking for C99 variadic macros over"
+echo " "
+
+echo "checking for gcc variadic macros start"
+DFIS_INCS=" #include <sys/types.h>
+	#include <stdio.h>
+	#define var(dummy, args...)  sprintf(args) "
+
+DFIS_FUNS="    char  buf[30]; buf[0] = '0';
+                      var(0, buf, \"%d\", 1);
+                      if (buf[0] != '1') return 1;"
+
+DFIS_CHECK
+
+if [ "$DFIS_RET" == "0" ]
+then
+	echo "checking for gcc variadic macros found"
+	if [ -z "$CTPE" ]
+	then
+		CTPE="#define SW_HAVE_GCC_VARIADIC_MACROS 1 "
+		DCTPE=" -DSW_HAVE_GCC_VARIADIC_MACROS=1 "
+	fi
+else
+	echo "checking for gcc variadic macros not found"
+fi
+echo "checking for gcc variadic macros over"
+echo " "
+
+echo "checking for iconv variadic macros start"
+ICONV=-liconv
+DFIS_INCS=" #include <stdio.h>
+	#include <iconv.h>"
+
+DFIS_FUNS="iconv_t	cd;
+	cd = iconv_open(\"UTF-8\", \"GBK\");
+	if (cd == -1 ) return 1;"
+
+DFIS_CHECK
+
+if [ "$DFIS_RET" == "0" ]
+then
+	ICONV=
+	echo "checking for iconv variadic macros not need "
+else
+	echo "checking for iconv variadic macros need $ICONV "
+fi
+echo "checking for iconv variadic macros over"
+echo " "
+
+echo "checking for iconv utf8 and gbk variadic macros start"
+DFIS_INCS=" #include <stdio.h>
+	#include <iconv.h>"
+
+DFIS_FUNS="iconv_t	cd;
+	cd = iconv_open(\"UTF-8\", \"GBK\");
+	if (cd == -1 ) return 1;"
+
+DFIS_CMP=
+
+DFIS_CHECK
+
+if [ "$DFIS_RET" == "0" ]
+then
+	ICONV=
+	echo "checking for iconv utf8 and gbk variadic macros support "
+else
+	echo "checking for iconv utf8 and gbk variadic macros not support "
+fi
+echo "checking for iconv utf8 and gbk variadic macros over"
+echo " "
+
+case $SW_SYSTEM in
+        linux)
+        OS_BITS=`uname -a |awk '{if($0~"x86_64") print 1;else print 0}'`
+                if [ $OS_BITS = 0 -a "$BIT" = "32" ];then
+                        OSBIT=-m32
+                        echo "+ 32-bits"
+			SYSTYPE=" -D__SYSTYPE_32__ "
+                else
+                        OSBIT=-m64
+                        echo "+ 64-bits"
+			SYSTYPE=" -D__SYSTYPE_64__ "
+                fi
+
+                CC=gcc
+                CFLAGS="$OSBIT -fPIC -g -DLINUX -D__DEBUG__ -DNOWHAT=1 -D_THREAD_SAFE -D__PRDT_ARG__ $DCTPE $MODU $DDATAFLAG $SYSTYPE $HTTPSSL $DESCFG"
+                LFLAGS="$OSBIT -g"
+                GFLAGS="$OSBIT -fPIC -shared -g"
+        ;;
+        aix)
+        OS_BITS=`ls -l /unix|awk '{if($0~"unix_64") print 1;else print 0}'`
+                if [ $OS_BITS = 1 -a "$BIT" != "32" ];then
+                        OSBIT=-q64
+                        echo "+ 64-bits"
+			SYSTYPE=" -D__SYSTYPE_64__ "
+                else
+                        OSBIT=-q32
+                        echo "+ 32-bits"
+			SYSTYPE=" -D__SYSTYPE_32__ "
+                fi
+                CC=cc
+                CFLAGS="$OSBIT -g -qcpluscmt -brtl -DAIX -D__DEBUG__ -DNOWHAT=1 -D_THREAD_SAFE -D__PRDT_ARG__ $DCTPE $MODU $DDATAFLAG $SYSTYPE $HTTPSSL $DESCFG"
+                LFLAGS="$OSBIT -g -qcpluscmt -brtl"
+                GFLAGS="$OSBIT -G"
+        ;;
+        sunos)
+        OS_BITS=`isainfo -b`
+                if [ "$OS_BITS" = "64" -a "$BIT" != "32" ];then
+                        OSBIT=-m64
+                        echo "+ 64-bits"
+                        SYSTYPE=" -D__SYSTYPE_64__ "
+                else
+                        OSBIT=-m32
+                        echo "+ 32-bits"
+                        SYSTYPE=" -D__SYSTYPE_32__ "
+                fi
+                CC=gcc
+                CFLAGS="$OSBIT -fPIC -g -DSOLARIS -D_REENTRANT -D__DEBUG__ -DNOWHAT=1 -D_THREAD_SAFE -D__PRDT_ARG__ $DCTPE $MODU $DDATAFLAG $SYSTYPE $HTTPSSL $DESCFG"
+                LFLAGS="$OSBIT -g"
+                GFLAGS="$OSBIT -fPIC -shared -g"
+                SOCKET=-lsocket
+                NSL=-lnsl
+        ;;
+        *)
+                if [ $SW_VERSION = yes ];then
+                        OSBIT=-q64
+                        echo "+ 64-bits"
+			SYSTYPE=" -D__SYSTYPE_64__ "
+                else
+                        OSBIT=-q32
+                        echo "+ 32-bits"
+			SYSTYPE=" -D__SYSTYPE_32__ "
+                fi
+                CC=cc
+                CFLAGS="$OSBIT -g -qcpluscmt -brtl -DAIX -D__DEBUG__ -DNOWHAT=1 -D_THREAD_SAFE $DCTPE $MODU $DDATAFLAG $SYSTYPE $HTTPSSL $DESCFG"
+                LFLAGS="$OSBIT -g -qcpluscmt -brtl"
+                GFLAGS="$OSBIT -G"
+        ;;
+esac
+
+if [ "$SW_SYSTEM" = "hp-ux" ];then
+	LDS="ld -b"
+	CFLAGS="$CFLAGS -DHPUX"
+else
+	LDS="$CC $GFLAGS"
+fi
+
+for ITEM in $DIRLIST
+do
+	ITEMN=`echo "$ITEM"`\N
+	eval ORI=\${$ITEM}
+	eval NEW=\${$ITEMN}
+#        eval $ITEM=
+if [ "$SW_OPT"  == "yes" ];then
+        if [ -n "$NEW" ]; then
+          eval $ITEM=$NEW
+	fi
+else
+	if [ -n "$NEW" ]; then
+	  eval $ITEM=$NEW
+	else
+		if [ "$SW_JH" != "yes" ]; then
+			echo "starting $ITEM Path configure..."
+			echo "please choice [Y/N](Y:overlook altertion)$ITEM:"
+			read YY
+			if [ "$YY" == "N" ]; then
+				echo "system default Directory :$ORI" 
+				echo "Please choice defalut or your path [Y/N]:"
+				read YN
+				if [ "$YN" == "N" ];then
+					i=0
+					echo "please input the $ITEM path:"
+					read D_PATH
+					while [ ! -d "$D_PATH" ]
+					do
+						echo "checking for $D_PATH ... not found"
+						echo "please again input the correct path:"
+						read D_PATH
+						i=` expr $i + 1 `
+						if [ "$D_PATH" == "end" ];then
+							break
+						fi
+						if [ "$i" -eq 3 ];then
+							break
+						fi
+					done
+				else
+					eval $ITEM=$ORI
+				fi	
+				if [ -d "$D_PATH" ]; then
+					echo "checking for $D_PATH ...found"
+					NEW=$D_PATH
+					eval $ITEM=$NEW
+				fi
+				D_PATH=
+			else
+				eval $ITEM=$ORI
+			fi
+		else
+			eval $ITEM=$ORI
+		fi
+		
+	fi
+fi
+done
+
+for ITEM in $DIRLIST
+do
+	eval ORI=\${$ITEM}
+	if [ ! -d "$ORI" ]
+	then
+		echo "dir[$ORI] not exist"
+		exit 1
+	fi
+done
+
+echo "" > $SW_ENV
+echo "CC=$CC" >> $SW_ENV
+echo "CFLAGS=$CFLAGS" >> $SW_ENV
+echo "GFLAGS=$GFLAGS" >> $SW_ENV
+echo "LFLAGS=$LFLAGS" >> $SW_ENV
+echo "LD=$LDS" >> $SW_ENV
+echo "" >> $SW_ENV
+echo 'APPINCLUDE=-I$(SWHOME)/src/incl_pub -I$(SWHOME)/src/incl_pub/json -I$(SWHOME)/include -I./include' >> $SW_ENV
+echo 'APPLIBDIR=-L$(SWHOME)/lib -L$(SWWORK)/lib' >> $SW_ENV
+echo 'PLGDIR=$(SWHOME)/plugin' >> $SW_ENV
+echo 'BINDIR=$(SWHOME)/bin' >> $SW_ENV
+echo 'LIBDIR=$(SWHOME)/lib' >> $SW_ENV
+echo 'APPLIB= -ldl' >> $SW_ENV
+echo "ICONV=$ICONV" >> $SW_ENV
+echo "VERSION=$VERSION" >> $SW_ENV
+echo "SSLLIB=$SSL" >> $SW_ENV
+echo "OPENSSLINC=$OPENSSLINC" >> $SW_ENV
+echo "SOCKET=$SOCKET" >> $SW_ENV
+echo "NSL=$NSL" >> $SW_ENV
+echo "" >> $SW_ENV
+
+if [ -n "$DIRLIST" ]
+then
+			if [ -f "$SWHOME/make/.dirname" ]
+			then
+					rm -f $SWHOME/make/.dirname
+			fi
+			echo "DIRLIST='$DIRLIST'" >> $SWHOME/make/.dirname
+			if [ -n "$MQDIR" ]
+			then
+				echo "MQDIR=$MQDIR" >> $SWHOME/make/.dirname
+			fi
+			
+			if [ -n "$TUXDIR" ]
+			then
+				echo "TUXDIR=$TUXDIR" >> $SWHOME/make/.dirname
+			fi
+			
+			if [ -n "$CICSDIR" ]
+			then
+				echo "CICSDIR=$CICSDIR" >> $SWHOME/make/.dirname
+			fi
+			
+			if [ -n "$ORACLE_HOME" ]
+			then
+				echo "ORACLE_HOME=$ORACLE_HOME" >> $SWHOME/make/.dirname
+			fi
+			
+			if [ -n "$DB2_HOME" ]
+			then
+				echo "DB2_HOME=$DB2_HOME" >> $SWHOME/make/.dirname
+			fi
+
+			chmod +x $SWHOME/make/.dirname
+fi
+
+#write include into adm_vers.h
+
+dates=`date +%Y/%m/%d/%T`
+vers="DFIS-BP."${VERSION}"-"${dates}
+#echo "vers=$vers"
+year=`date +%Y`
+if [ -f "$SWHOME/src/incl_pub/adm_vers.h" ];then
+	rm -f $SWHOME/src/incl_pub/adm_vers.h
+fi
+
+cat << END >> $SWHOME/src/incl_pub/adm_vers.h
+#ifndef __ADMIN_VERSION_H__
+#define __ADMIN_VERSION_H__
+#define  BASE_VERS				"$VERSION"
+#define  VERS_NO				"$vers"
+#define  VERS_DATE			"$year"
+#endif
+END

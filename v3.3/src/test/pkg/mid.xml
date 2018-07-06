@@ -1,0 +1,73 @@
+<CBM PKGTYPE="IMF" >
+<ANALYZE>
+	<FIRSTWORK>
+		<ITEM NAME="#tx_code" TYPE="n4" />
+	</FIRSTWORK>
+	<HEAD>
+		<ITEM NAME="#len"       TYPE="a8" />
+		<ITEM NAME="#fd1001" 	FILLER="业务类型"               TYPE="a1"  />
+		<ITEM NAME="#fd1002" 	FILLER="发起机构号"             TYPE="a12" />
+		<ITEM NAME="#fd1003" 	FILLER="接收机构号"             TYPE="a12" />
+		<ITEM NAME="#fd1004" 	FILLER="发起行传输日期"         TYPE="a8"  />
+		<ITEM NAME="#fd1005" 	FILLER="发起行传输时间"         TYPE="a6"  />
+		<ITEM NAME="#fd1006" 	FILLER="通讯保留字"             TYPE="a8"  />
+		<ITEM NAME="#fd1007" 	FILLER="渠道标识"               TYPE="a2"  />
+		<ITEM NAME="#fd1008" 	FILLER="用户保留字"             TYPE="a16" />
+		<ITEM NAME="#fd1009" 	FILLER="清算日期"               TYPE="a8"  />
+		<ITEM NAME="#fd1010" 	FILLER="报文类代码"             TYPE="a6"  />
+		<ITEM NAME="#fd1011" 	FILLER="参考业务类型"           TYPE="a2"  />
+		<ITEM NAME="#fd1012" 	FILLER="传输类型"               TYPE="a1"  />
+		<ITEM NAME="#fd1013" 	FILLER="报文检索号"             TYPE="a42" />
+		<ITEM NAME="#fd1014" 	FILLER="保留字段"               TYPE="a32" />
+	</HEAD>
+	<PACKAGE RESPCD="#respcd">
+		<ITEM NAME="#fd2001" 	FILLER="交易代码"         MIDDLE=" "  OFFSET="3"   SEP="\x0a"  />
+	</PACKAGE>
+ <LASTWORK>
+     <ITEM NAME="$cbmkey"    VALUE="#fd2006+#fd1003+#fd2039"/>
+ </LASTWORK>
+</ANALYZE>
+<INTEGRATE>
+	<HEAD>
+		<ITEM NAME="#len"       TYPE="a8" FLAG="1" />
+		<ITEM NAME="#fd1001" 	FILLER="业务类型"               TYPE="a1"  FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1002" 	FILLER="发起机构号"             TYPE="a12" FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1003" 	FILLER="接收机构号"             TYPE="a12" FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1004" 	FILLER="发起行传输日期"         TYPE="a8"  FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1005" 	FILLER="发起行传输时间"         TYPE="a6"  FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1006" 	FILLER="通讯保留字"             TYPE="a8"  FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1007" 	FILLER="渠道标识"               TYPE="a2"  FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1008" 	FILLER="用户保留字"             TYPE="a16" FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1009" 	FILLER="清算日期"               TYPE="a8"  FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1010" 	FILLER="报文类代码"             TYPE="a6"  FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1011" 	FILLER="参考业务类型"           TYPE="a2"  FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1012" 	FILLER="传输类型"               TYPE="a1"  FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1013" 	FILLER="报文检索号"             TYPE="a42" FLAG="1" BLANK="1" />
+		<ITEM NAME="#fd1014" 	FILLER="保留字段"               TYPE="a32" FLAG="1" BLANK="1" />
+	</HEAD>
+	<PACKAGE>
+		<ITEM NAME="#fd2001" 	FILLER="交易代码"         MIDDLE=" "  OFFSET="3"    SEP="\x0a" />
+		<ITEM NAME="#fd2002" 	FILLER="发起行行号"       MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2003" 	FILLER="发起行清算行号"   MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2004" 	FILLER="接收行行号"       MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2005" 	FILLER="接收行清算行号"   MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2006" 	FILLER="委托日期"         MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2007" 	FILLER="币种缩写"         MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2008" 	FILLER="金额"             MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2009" 	FILLER="付款人账号"       MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2010" 	FILLER="付款人名称"       MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2011" 	FILLER="付款人地址"       MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2012" 	FILLER="收款人账号类型"   MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2013" 	FILLER="收款人账号"       MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2014" 	FILLER="收款人名称"       MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2015" 	FILLER="收款人地址"       MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2016" 	FILLER="业务属性"         MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2017" 	FILLER="用途"             MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+		<ITEM NAME="#fd2018" 	FILLER="备注"             MIDDLE=" "  OFFSET="3"    SEP="\x0a"  />
+	</PACKAGE>
+ <LASTWORK>
+ 	<ITEM NAME="#len"    LENGTH="[0..7]"   MYSELF="FALSE"/>
+ 	<ITEM NAME="$cbmkey" VALUE="#fd2006+#fd1002+#fd2039"/>
+ </LASTWORK>
+</INTEGRATE>
+</CBM>

@@ -1,0 +1,88 @@
+#!/bin/sh
+
+if [ "$*" == "" ]
+then
+	echo "USAGE: $0 [-t 业务流水] [-p 平台流水] [-l 日志目录] [-d 日期] [-o 输出目录]"
+	echo "业务流水 与 平台流水 必输一个"
+	echo "日志目录 默认为 $SWWORK/log"
+	echo "日期 默认为 当天"
+	echo "生成文件路径默认为 当前目录"
+	echo "生成文件名为 日期_流水号.txt"
+	exit
+fi
+
+cnt=0
+for param in $*
+do
+	args[$cnt]=$param
+	cnt=`expr $cnt + 1`
+done
+	
+logdir=$SWWORK/log
+date=`date +%Y%m%d`
+outdir=`pwd`
+
+i=0
+while [ $i -lt $cnt ]
+do
+	j=`expr $i + 1`
+	if [ "${args[$i]}" == "-t" ]
+	then
+		trcno=${args[$j]}
+	elif [ "${args[$i]}" == "-p" ]
+	then
+		ptno=${args[$j]}
+	elif [ "${args[$i]}" == "-l" ]
+	then
+		logdir=${args[$j]}
+	elif [ "${args[$i]}" == "-d" ]
+	then
+		date=${args[$j]}
+	elif [ "${args[$i]}" == "-o" ]
+	then
+		outdir=${args[$j]}
+	fi
+
+	i=`expr $i + 2`
+done
+	
+if [ "$trcno" == "" ] && [ "$ptno" == "" ]
+then
+	echo "业务流水 与 平台流水 必输一个"
+	exit
+fi
+
+if [ "$trcno" != "" ]
+then
+	trcno=`printf "%012d" $trcno`
+	ptno=`find $logdir -name "*${date}*log*" | grep -v syslog | xargs grep -h "${trcno}" | head -n 1 |  awk -F "|" '{print $1}'`
+	if [ "$ptno" == "" ]
+	then
+		echo "未找到业务流水$trcno对应的平台流水"
+		exit
+	fi
+fi
+
+echo "平台流水:$ptno"
+echo "日志目录:$logdir"
+echo "日期:$date"
+echo "输出目录:$outdir"
+
+
+tmpfile=$SWWORK/dat/.${date}_${ptno}.txt
+tmptime=$SWWORK/dat/.time.txt
+filename=${outdir}/${date}_${ptno}.txt
+
+
+find $logdir -name "*${date}*log*" | grep -v syslog| xargs grep -h "^${ptno}|" > $tmpfile
+awk -F "|" '{print $2}' $tmpfile | sort | uniq > $tmptime
+>$filename
+for timestr in `cat $tmptime`
+do
+	grep -h $timestr $tmpfile >> $filename
+done
+
+rm -f $tmpfile
+rm -f $tmptime
+echo "日志导出到文件:$filename"
+

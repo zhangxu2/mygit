@@ -1,0 +1,19 @@
+include $(SWHOME)/make/sw.env
+
+USERLIB=-lswbase -lswpack -ldl
+TARGET=tt2
+OBJS=t2.o 
+
+ALL:$(TARGET)
+$(TARGET):$(OBJS)
+	$(CC) $(LFLAGS)  -o  $@ $(OBJS) $(APPLIBDIR) $(USERLIB)
+	@rm -f *.o
+	@echo "$@ is OK !"
+
+.SUFFIXES: .c .o
+.c.o:
+	$(CC) -v $(CFLAGS) $(APPINCLUDE) -I$(SWHOME)/src/pkg/ -c $*.c
+
+clean:
+	rm -f *.o $(TARGET)
+

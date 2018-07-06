@@ -1,0 +1,58 @@
+<CBM PKGTYPE="XML" >
+        <ANALYZE>
+		<FIRSTWORK>
+			<ITEM NAME="#tx_code" BEGIN="0" TYPE="a" LENGTH="2" />
+		</FIRSTWORK>
+		<HEAD CHECK="#tx_code=ab">
+			<ITEM NAME="#aa" TYPE="a8" />
+			<ITEM NAME="#bb" TYPE="a4" />
+			<ITEM NAME="#cc" TYPE="a6" />
+			<ITEM NAME="#dd" TYPE="a5" />
+		</HEAD>
+		<HEAD>
+			<ITEM NAME="#11" TYPE="a8" />
+			<ITEM NAME="#22" TYPE="a4" />
+			<ITEM NAME="#33" TYPE="a6" />
+			<ITEM NAME="#44" TYPE="a5" />
+		</HEAD>
+                <PACKAGE RESPCD="#22">
+                        <ITEM NAME="#pkglen"     TYPE="n4" />
+                        <ITEM NAME="#pkgtype"    TYPE="n3" />
+                        <ITEM NAME="#loopcnt"    TYPE="n4" />
+                        <ITEM NAME="#loop"    LOOP="1" BREAK="NULL" >
+				<SUB NAME="#a" TYPE="a2" SEP="|||" />
+				<SUB NAME="#b" TYPE="a4" SEP="|||" />
+				<SUB NAME="#c" TYPE="a6" SEP="###" />
+			</ITEM>
+			<ITEM NAME="#AA" TYPE="a8" />
+                </PACKAGE>
+        </ANALYZE>
+        <INTEGRATE>
+		<HEAD CHECK="#tx_code=ab">
+			<ITEM NAME="#aa" TYPE="a8" />
+			<ITEM NAME="#bb" TYPE="a4" />
+			<ITEM NAME="#cc" TYPE="a6" />
+			<ITEM NAME="#dd" TYPE="a5" />
+		</HEAD>
+		<HEAD>
+			<ITEM NAME="#11" TYPE="a8" />
+			<ITEM NAME="#22" TYPE="a4" />
+			<ITEM NAME="#33" TYPE="a6" />
+			<ITEM NAME="#44" TYPE="a5" />
+		</HEAD>
+                <PACKAGE RESPCD="#22">
+                        <ITEM NAME="#pkglen"     TYPE="n4" />
+                        <ITEM NAME="#pkgtype"    TYPE="n3" />
+                        <ITEM NAME="#loopcnt"    TYPE="n4" />
+                        <ITEM NAME="#loop"    LOOP="1" LOOPCNT="#loopcnt" >
+				<SUB NAME="#a" TYPE="a2" SEP="|||" />
+				<SUB NAME="#b" TYPE="a4" SEP="|||" />
+				<SUB NAME="#c" TYPE="a6" SEP="###" />
+			</ITEM>
+			<ITEM NAME="#AA" TYPE="a8" />
+                </PACKAGE>
+                <!--LASTWORK>
+                        <ITEM NAME="#pkglen" LENGTH="[0..3]" MYSELF="FALSE" />
+                </LASTWORK -->
+        </INTEGRATE>
+</CBM>

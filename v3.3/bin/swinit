@@ -1,0 +1,42 @@
+#################################################################
+#文件:init                                                      #
+#功能:sw_man init                                               #
+#使用:init                                                      #
+#作者:liteng                                                    #
+#日期:2010.9.11                                                 #
+#################################################################
+echo "sw_man init begin to do follows:"
+echo "   rm -f $SWWORK/svrcfg/common/bin/* "
+echo "   rm -rf $SWWORK/log/* "
+echo "   rm -f $SWWORK/dat/.*.bak "
+echo "   rm -f $SWWORK/dat/*.saf "
+#echo "Are you sure ? (y/n):\c"
+#read answer
+#if [ "$answer" != "y" ] && [ "$answer" != "Y" ]
+#then
+#	exit 
+#fi
+
+swclear
+rm -rf $SWWORK/ext/1* $SWWORK/ext/2* $SWWORK/ext/3* 
+rm -rf $SWWORK/ext/4* $SWWORK/ext/4* $SWWORK/ext/5* 
+rm -rf $SWWORK/ext/7* $SWWORK/ext/8* $SWWORK/ext/9* 
+rm -rf $SWWORK/ext/tmp/* 
+rm -f $SWWORK/etc/svrcfg/common/bin/*
+rm -f $SWWORK/etc/flow/bin/*
+rm -f $SWWORK/tmp/*.file
+
+cd $SWWORK/tmp
+find . -name *.bak |xargs rm -f 
+find . -name *.saf |xargs rm -f 
+find . -name *.log |xargs rm -f 
+cd $SWWORK/log
+find . -name "*.log"|xargs rm -f
+find . -name "*.bak"|xargs rm -f
+find . -name ".*.beg"|xargs rm -f
+find . -name "*.pkg"|xargs rm -f
+find . -name "*.list"|xargs rm -f
+find . -name "core*"|xargs rm -f
+
+echo "success"
+

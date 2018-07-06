@@ -1,0 +1,352 @@
+#!/bin/sh
+
+PROF=
+
+if [ -f ~/.profile ];then
+	PROF=~/.profile
+fi
+
+if [ -f ~/.bash_profile ];then
+	PROF=~/.bash_profile
+fi
+
+HEAD()
+{
+	cat << END
+________________________________________________________________________________
+    DFIS_BP: 3.0    USER: $LOGNAME    date:`date +%Y/%m/%d-%H:%M:%S`
+    SWHOME: $SWHOME 
+    SWWORK: $SWWORK
+________________________________________________________________________________
+END
+}
+
+END()
+{
+	echo "******************************   you  set  over   ******************************"
+	echo "________________________________________________________________________________"
+}
+
+DO_LIST()
+{
+	LISTFIND=0
+	for SIMP in $DIRLIST
+	do
+		if [ "$SIMP" = "$1" ];then
+			LISTFIND=1
+		fi
+	done
+	if [ "$LISTFIND" = "0" ];then
+		DIRLIST="$DIRLIST $1 "
+	fi
+	
+	LISTFIND=0
+	for SIMP in $HAVECHOICE
+	do
+		if [ "$SIMP" = "$2" ];then
+			LISTFIND=1
+		fi
+	done
+	
+	if [ "$LISTFIND" = "0" ];then
+		HAVECHOICE="$HAVECHOICE $2 "
+	fi
+}
+
+remind()
+{
+	eval MSG=\${$2}
+	eval OLD=\${$2}
+cat << END
+
+    you have choiced $1, please input new information
+    default $2="$MSG"
+    if you want use the default info, please direct input enter"
+END
+	read NEW
+
+	case $NEW in
+	q|Q|quit|exit)
+		echo "you input $NEW, now exit"
+		END
+		exit 1
+	;;
+	esac
+	
+	if [ -z "$NEW" ]
+	then
+		eval $2=$MSG
+	else
+		eval $2=$NEW
+	fi
+
+	eval MSG=\${$2}
+	if [ -z "$MSG" ]
+	then
+		echo "you have choice $1, but $2 is null, your input is invalid"
+		eval $2=$OLD
+		sleep 2
+		return 0
+	fi
+
+	if [ ! -d "$MSG" ]
+  then
+		echo "you have choice $1, but $MSG is not directory, your input is invalid"
+		eval $2=$OLD
+		sleep 2
+		return 0
+  fi
+	  if [ -z $2 ]
+ 	 then
+		echo "export $2=$MSG" >> $PROF
+	fi
+	DO_LIST $2 $1
+}
+
+DO_MODU()
+{
+	MODUFIND=0
+	for SIMP in $MODU
+	do
+		if [ "$SIMP" = "$1" ]
+		then
+			MODUFIND=1
+		fi
+	done
+	
+	if [ "$MODUFIND" = "0" ]
+	then
+		MODU="$MODU $1 "
+	fi
+}
+
+MAIN_BODY()
+{
+cat << END
+please choice your module or input (ok,commit,OK) finish input
+a: data base
+    **  oracle  db2  informix  **
+b: middleware
+    **  tuxedo  mq  cics  tea  tlq sunlink **
+now you are choiceing please input one module  ......
+END
+}
+MAIN_BODY_ADD()
+{
+cat << END
+c: module
+    **  newxml  alert  vars **
+END
+}
+
+DATA_BODY()
+{
+cat << END
+please choice your module
+    1: oracle 
+        default ORACLE_HOME=$ORACLE_HOME
+    2: informix
+        default INFORMIXDIR=$INFORMIXDIR
+    3: db2
+        default DB2_HOME=$DB2_HOME
+now you are choiceing please input and use space separate ......
+END
+
+}
+
+MID_BODY()
+{
+cat << END
+please choice your module
+    1: tuxedo
+        default TUXDIR=$TUXDIR
+    2: mq
+        default MQDIR=$MQDIR
+    3: cics
+        default CICSDIR=$CICSDIR
+    4: tea
+        default TEADIR=$TEADIR
+    5: tlq
+        default TLQDIR=$TLQDIR
+    6: sunlink
+        default SUNDIR=$SUNDIR
+now you are choiceing please input and use space separate ......
+END
+}
+
+MOD_BODY()
+{
+cat << END
+please choice your module
+    a: 堆栈新模式XML解析
+    b: 预警模块
+    c: 共享内存变量池
+	c1: 变量池支持SLAB算法分配空间（默认），否则使用偏移算法分配空间
+	c2: 变量池使用文件缓存扩展空间（默认）
+	c3: 变量池使用共享内存扩展空间
+	c4: 变量池支持随机分配，否则与Mtype一一对应 
+now you are choiceing please input and use space separate ......
+END
+}
+
+ALERT()
+{
+	echo "do you want use alert [Y/N]?"
+	read SS
+	if [ "$SS" = "N" ];then
+		MODU="-D__SHM_VARS_SUPPORT__  "
+	else
+		MODU=" -D__ALERT_SUPPORT__ -D__SHM_VARS_SUPPORT__  "
+	fi
+}
+
+SSL()
+{
+	echo "Do you want use httpssl[Y/N]?"
+	read s
+	if [ "$s" = "Y" -o "$s" = "y" ];then
+		HTTPSSL="-DSW_USE_OPENSSL"
+	fi
+}
+CFG()
+{
+	echo "Does cfg need to decrypt[Y/N]?"
+	read dd
+	if [ "$dd" = "Y" -o "$dd" = "y" ];then
+		DESCFG="-DSW_DES_FILE"
+	fi
+}
+MODU=" -D__ALERT_SUPPORT__ -D__SHM_VARS_SUPPORT__  "
+DIRLIST=
+HTTPSSL=
+DESCFG=
+ERR=0
+{
+	clear
+	HEAD
+#	ALERT
+	SSL
+#	CFG
+}
+while :
+do
+	ERR=0
+	clear
+	HEAD
+	MAIN_BODY
+	echo "you have choiced:$HAVECHOICE"
+	read CHOICE
+
+	case $CHOICE in
+	a)
+		clear
+		HEAD
+		DATA_BODY
+		read CHOICE
+
+		for SIMP in $CHOICE
+		do
+			case $SIMP in
+			1|2|3)
+			;;
+			q|Q|quit|exit)
+				echo "you input $CHOICE, now exit"
+				END
+				exit 1
+			;;
+			*)
+				echo "!!!!! not find the option[$SIMP]..."
+				sleep 2
+				ERR=1
+			;;
+			esac
+		done
+
+		for SIMP in $CHOICE
+		do
+			if [ "$ERR" = "1" ]
+			then
+				break
+			fi
+			case $SIMP in
+			1)
+				remind oracle ORACLE_HOME
+			;;
+			2)
+				remind informix INFORMIXDIR
+			;;
+			3)
+				remind db2 DB2_HOME
+			;;
+			esac
+		done
+	;;
+	b)
+		clear
+		HEAD
+		MID_BODY
+		read CHOICE
+
+		for SIMP in $CHOICE
+		do
+			case $SIMP in
+			1|2|3|4|5|6)
+			;;
+			q|Q|quit|exit)
+				echo "you input $CHOICE, now exit"
+				END
+				exit 1
+			;;
+			*)
+				echo "!!!!! not find the option[$SIMP]..."
+				sleep 2
+				ERR=1
+			;;
+			esac
+		done
+
+		for SIMP in $CHOICE
+		do
+			if [ "$ERR" = "1" ]
+			then
+				break
+			fi
+			case $SIMP in
+			1)
+				remind tuxedo TUXDIR
+			;;
+			2)
+				remind mq MQDIR
+			;;
+			3)
+				remind cics CICSDIR
+			;;
+			4)
+				remind tea TEADIR
+			;;
+			5)
+				remind tlq  TLQDIR
+			;;
+			6)
+				remind sunlink SUNDIR
+			;;
+			esac
+		done
+	;;
+	q|Q|quit|exit)
+		echo "you input $CHOICE, now exit"
+		END
+		exit 1
+	;;
+	ok|OK|commit)
+		END
+		break
+	;;
+	*)
+		echo "!!!!! not find the option[$CHOICE]..."
+		sleep 2
+		continue
+	;;
+	esac
+done
+

@@ -1,0 +1,136 @@
+#!/bin/sh
+if [ $# -ne 2 ];then
+	echo "eg:sh agtcfg --b=32/64 --v=2.0.0"
+	exit 1
+fi
+
+bit=`echo $1 | sed -e 's/[-_a-zA-Z0-9]*=//'`
+if [ "$bit" != "32" -a "$bit" != "64" ];then
+	echo "input argv[$1] error"
+	exit 1
+fi
+
+vers=`echo $2 | sed -e 's/[-_a-zA-Z0-9]*=//'`
+#echo "vers===$vers"
+
+swenv="$SWHOME/make/agtenv"
+sw_system=`uname -s 2>/dev/null`
+if [ -n $sw_system ]; then
+        sw_system=`echo $sw_system | tr [A-Z] [a-z]`
+fi
+
+case $sw_system in
+	linux)
+		osbits=`uname -a |awk '{if($0~"x86_64") print 1;else print 0}'`
+		if [ $osbits = 0 -a "$bit" = "32" ];then
+			OSBIT=-m32
+			echo "+ 32-bits"
+			SYSTYPE=" -D__SYSTYPE_32__ "
+		else
+			OSBIT=-m64
+			echo "+ 64-bits"
+			SYSTYPE=" -D__SYSTYPE_64__ "
+		fi
+
+		CC=gcc
+		CFLAGS="$OSBIT -fPIC -g -DLINUX -D__DEBUG__ -DNOWHAT=1 -D_THREAD_SAFE -D__PRDT_ARG__"
+		LFLAGS="$OSBIT -g"
+		GFLAGS="$OSBIT -fPIC -shared -g"
+		COMMLIB="-lstatgrab"
+	;;
+	aix)
+		osbits=`ls -l /unix|awk '{if($0~"unix_64") print 1;else print 0}'`
+		if [ $osbits = 1 -a "$bit" != "32" ];then
+			OSBIT=-q64
+			echo "+ 64-bits"
+			SYSTYPE=" -D__SYSTYPE_64__ "
+		else
+			OSBIT=-q32
+			echo "+ 32-bits"
+			SYSTYPE=" -D__SYSTYPE_32__ "
+		fi
+		CC=cc
+		CFLAGS="$OSBIT -g -qcpluscmt -brtl -DAIX -D__DEBUG__ -DNOWHAT=1 -D_THREAD_SAFE -D__PRDT_ARG__"
+		LFLAGS="$OSBIT -g -qcpluscmt -brtl"
+		GFLAGS="$OSBIT -G"
+		COMMLIB="-lperfstat"
+	;;
+	sunos)
+		osbits=`isainfo -b`
+		if [ "$osbits" = "64" -a "$bit" != "32" ];then
+			OSBIT=-m64
+			echo "+ 64-bits"
+			SYSTYPE=" -D__SYSTYPE_64__ "
+		else
+			OSBIT=-m32
+			echo "+ 32-bits"
+			SYSTYPE=" -D__SYSTYPE_32__ "
+		fi
+		CC=gcc
+		CFLAGS="$OSBIT -fPIC -g -DSOLARIS -D_REENTRANT -D__DEBUG__ -DNOWHAT=1 -D_THREAD_SAFE -D__PRDT_ARG__"
+		LFLAGS="$OSBIT -g"
+		COMMLIB="-lstatgrab -ldevinfo -lkstat"
+		GFLAGS="$OSBIT -fPIC -shared -g"
+		SOCKET=-lsocket
+		NSL=-lnsl
+	;;
+	*)
+		if [ "$bit" = "64" ];then
+			OSBIT=-q64
+			echo "+ 64-bits"
+			SYSTYPE=" -D__SYSTYPE_64__ "
+		else
+			OSBIT=-q32
+			echo "+ 32-bits"
+			SYSTYPE=" -D__SYSTYPE_32__ "
+		fi
+		CC=cc
+		CFLAGS="$OSBIT -g -qcpluscmt -brtl -DAIX -D__DEBUG__ -DNOWHAT=1 -D_THREAD_SAFE"
+		LFLAGS="$OSBIT -g -qcpluscmt -brtl"
+		GFLAGS="$OSBIT -G"
+	;;
+esac
+
+if [ "$sw_system" = "hp-ux" ];then
+	LDS="ld -b"
+	CFLAGS="$CFLAGS -DHPUX"
+else
+	LDS="$CC $GFLAGS"
+fi
+
+echo "" > $swenv
+echo "CC=$CC" >> $swenv
+echo "CFLAGS=$CFLAGS" >> $swenv
+echo "GFLAGS=$GFLAGS" >> $swenv
+echo "LFLAGS=$LFLAGS" >> $swenv
+echo "LD=$LDS" >> $swenv
+echo "" >> $swenv
+echo 'APPINCLUDE=-I$(SWHOME)/src/incl_pub -I$(SWHOME)/include -I./include' >> $swenv
+echo 'APPLIBDIR=-L$(SWHOME)/lib -L$(SWWORK)/lib' >> $swenv
+echo 'PLGDIR=$(SWHOME)/plugin' >> $swenv
+echo 'BINDIR=$(SWHOME)/bin' >> $swenv
+echo 'LIBDIR=$(SWHOME)/lib' >> $swenv
+echo 'AGTLIBDIR=$(SWHOME)/agent_lib' >> $swenv
+echo 'APPLIB= -ldl' >> $swenv
+echo "ICONV=$ICONV" >> $swenv
+echo "VERSION=$vers" >> $swenv
+echo "COMMLIB=$COMMLIB" >> $swenv
+echo "SOCKET=$SOCKET" >> $swenv
+echo "NSL=$NSL" >> $swenv
+echo "" >> $swenv
+
+#write include into agt_vers.h
+dates=`date +%Y/%m/%d/%T`
+version="DFIS-Agent."${vers}"-"${dates}
+year=`date +%Y`
+if [ -f "$SWHOME/src/agent/include/agt_vers.h" ];then
+	rm -f $SWHOME/src/agent/include/agt_vers.h
+fi
+
+cat << END >> $SWHOME/src/agent/include/agt_vers.h
+#ifndef __AGT_VERSION_H__
+#define __AGT_VERSION_H__
+#define  AGT_VERS_NO				"$version"
+#define  AGT_VERS_DATE				"$year"
+#endif
+END

@@ -1,0 +1,107 @@
+#!/bin/sh
+
+tarname=$3
+SW_SYSTEM=`uname -s 2>/dev/null`
+SW_SYSTEM=`echo $SW_SYSTEM | tr [A-Z] [a-z]`
+
+SRCLIST="
+os/unix
+core
+pack
+uniform
+admin
+alert
+job
+pol
+comm
+logs
+udbc/com
+svc
+lsn/map
+lsn/comm
+lsn/tcp
+lsn/svrmap
+plugin/des
+plugin/udf
+plugin/autosend
+plugin/dealpkg
+plugin/http
+plugin/zip
+plugin/deny
+plugin/jzcardpack
+plugin/maptxcode
+plugin/packcmt
+plugin/savepkg
+plugin/json/json-c
+plugin/json/pack_json
+plugin/soap
+plugin/start
+plugin/file/tcpf
+tools/swmake
+tools/cipc
+tools/minfo
+tools/mipc
+tools/swreg
+"
+for ITEM in $SRCLIST
+do
+	CURPATH=$SWHOME/src/$ITEM
+	echo $CURPATH
+	ret=`echo $var | awk '{if($0~/^#/) print 1;else print 0}'`
+	if [ $ret -eq 1 ];then
+		continue;
+	fi
+	
+	if [ -n "$tarname" ];then
+		cd $SWHOME
+		tar -xf $tarname src/$ITEM
+	fi
+	
+	cd $CURPATH
+	if [ "$SW_SYSTEM" = "linux" -a -f "$CURPATH/Makefile.linux" ];then
+			echo "system:$SW_SYSTEM"
+			echo "build: make -f Makefile.linux"
+			make -f Makefile.linux clean
+			make -f Makefile.linux
+	elif [ "$SW_SYSTEM" = "sunos" -a -f "$CURPATH/Makefile.solaris" ];then
+			echo "system:$SW_SYSTEM"
+			echo "build: make -f Makefile.solaris"
+			make -f Makefile.solaris clean
+			make -f Makefile.solaris
+	else
+			make clean
+			echo "system: $SW_SYSTEM"
+			echo "build: make "
+			make
+	fi
+ 
+	if [ $? -ne 0 ];then
+		echo "±àÒë[$CURPATH]³ö´í,ÊÇ·ñ¼ÌÐø±àÒë(y/n)"
+		read answer
+		if [ "$answer" = "n" ];then
+			if [ "$1" = "d" ];then
+				cd $SWHOME
+				rm -rf $SWHOME/src
+			fi
+			exit 1
+		fi
+	fi
+	
+	if [ -n "$tarname" ];then
+		cd $SWHOME
+		rm -rf $CURPATH
+	fi
+done
+
+if [ "$2" != "no" ];then
+	cd $SWHOME/make
+	if [ -f ".dirname" ];then
+		. $SWHOME/make/.dirname
+		. modules
+		make
+		make install
+		rm -f Makefile
+	fi
+	echo "all make ok"
+fi
+

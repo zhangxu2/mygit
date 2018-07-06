@@ -1,0 +1,70 @@
+<?xml version= "10" encoding= "GBK" ?>
+<CBM>
+	<ANALYZE>
+		<FIRSTWORK>
+			<ITEM NAME="#chnl" BEGIN="8" LENGTH="2" />
+		</FIRSTWORK>
+		<HEAD>
+			<ITEM NAME="#len" 		TYPE="a8"  	/>
+			<ITEM NAME="#chnl_no" 		TYPE="a2"  	/>
+			<ITEM NAME="#tel" 		TYPE="a6"  	/>
+			<ITEM NAME="#sys_trace_no" 	TYPE="a9" 	/>
+			<ITEM NAME="#sys_date" 		TYPE="a8"  	/>
+			<ITEM NAME="#pkgtype" 		TYPE="a1"  	/>
+			<ITEM NAME="#tx_flow_ind" 	TYPE="a1"  	/>
+			<ITEM NAME="#wd_ind" 		TYPE="a1"  	/>
+			<ITEM NAME="#tn_ind" 		TYPE="a1"  	/>
+			<ITEM NAME="#sys_addr" 		TYPE="a50" 	/>
+			<ITEM NAME="#result" 		TYPE="a1"  	/>
+			<ITEM NAME="#file_snd" 		TYPE="a1"  	/>
+			<ITEM NAME="#tx_br_no" 		TYPE="a12" 	/>
+			<ITEM NAME="#sys_id" 		TYPE="a4" CONST="9876"	/>
+			<ITEM NAME="#sub_sys_id" 	TYPE="a4" CONST="1234" 	/>
+			<ITEM NAME="#sys_map" 		TYPE="a20"  />
+			<ITEM NAME="#msgtype"	    TYPE="a5"  	/>
+		</HEAD>
+		<PACKAGE RESPCD="#sys12">
+			<ITEM NAME="#InputBrc" KEY="1" SEP="</...>"/>
+		</PACKAGE>
+		<LASTWORK>
+			<ITEM NAME="$cbmkey" VALUE="#InputBrc" />
+		</LASTWORK>
+	</ANALYZE>
+	<INTEGRATE>
+		<FIRSTWORK>
+			<ITEM NAME="#sys6"	TYPE="n4" />
+		</FIRSTWORK>
+		<HEAD>
+			<ITEM NAME="#len" 			TYPE="a8"   FLAG="1" />
+			<ITEM NAME="#chnl_no" 		TYPE="a2" 	FLAG="1" />
+			<ITEM NAME="#tel" 			TYPE="a6" 	FLAG="1" />
+			<ITEM NAME="#sys_trace_no" 	TYPE="a9"	FLAG="1" />
+			<ITEM NAME="#sys_date" 		TYPE="a8" 	FLAG="1" />
+			<ITEM NAME="#pkgtype" 		TYPE="a1" 	FLAG="1" />
+			<ITEM NAME="#tx_flow_ind" 	TYPE="a1" 	FLAG="1" />
+			<ITEM NAME="#wd_ind" 		TYPE="a1" 	FLAG="1" />
+			<ITEM NAME="#tn_ind" 		TYPE="a1" 	FLAG="1" />
+			<ITEM NAME="#sys_addr" 		TYPE="a50"	FLAG="1" />
+			<ITEM NAME="#result" 		TYPE="a1" 	FLAG="1" />
+			<ITEM NAME="#file_snd" 		TYPE="a1" 	FLAG="1" />
+			<ITEM NAME="#tx_br_no" 		TYPE="a12"	FLAG="1" />
+			<ITEM NAME="#sys_id" 		TYPE="a4" 	FLAG="1" CONST="9876" />
+			<ITEM NAME="#sub_sys_id" 	TYPE="a4" 	FLAG="1" CONST="1234" />
+			<ITEM NAME="#sys_map" 		TYPE="a20"  FLAG="1" />
+			<ITEM NAME="#msgtype"	    TYPE="a5"  	FLAG="1"	CONST="01001" />
+		</HEAD>
+		<PACKAGE RESPCD="#sys12">
+			<ITEM NAME="#InputBrc" 	KEY="1"	SEP="</InputBrc>" />
+			<ITEM NAME="#InputTeller" 	KEY="1"	SEP="</InputTeller>" />
+			<ITEM NAME="#CustomerName" 	KEY="1" SEP="</CustomerName>" />
+			<ITEM NAME="#PhoneNumber" 	KEY="1"	SEP="</PhoneNumber>" />
+			<ITEM NAME="#Address" 	KEY="1"	SEP="</Address>" />
+			<ITEM NAME="#InterestDate" 	KEY="1"	SEP="</InterestDate>" />
+			<ITEM NAME="#Amount" 		KEY="1"	SEP="</Amount>" />			
+			<ITEM NAME="#Currency" 	KEY="1"	SEP="</Currency>" />
+		</PACKAGE>
+		<LASTWORK>
+			<ITEM NAME="#len"	LENGTH="[0..7]"		MYSELF="FALSE" />
+		</LASTWORK>
+	</INTEGRATE>
+</CBM>

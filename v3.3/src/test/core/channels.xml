@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<CHANNEL>
+	<LISTEN>listen1</LISTEN>
+	<PRODUCT>
+		<NAME>name</NAME>
+	</PRODUCT>
+</CHANNEL>
+<CHANNEL>
+	<LISTEN>listen2</LISTEN>
+	<PRODUCT>
+		<NAME>name</NAME>
+	</PRODUCT>
+</CHANNEL>
+

@@ -1,0 +1,11 @@
+<?xml version= "10" encoding= "GBK" ?>
+<CBM>
+	<TYPE_ALYZ>
+		<ANALYZE>
+			<ITEM NAME="sep_processor" CFG="sep.xml" />
+		</ANALYZE>
+		<INTEGRATE>
+			<ITEM NAME="sep_processor" CFG="sep.xml" />
+                </INTEGRATE>
+	</TYPE_ALYZ>
+</CBM>

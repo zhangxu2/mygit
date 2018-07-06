@@ -1,0 +1,18 @@
+
+CC=gcc
+CFLAGS=-m32 -fPIC -g -DLINUX -D__DEBUG__ -DNOWHAT=1 -D_THREAD_SAFE -D__PRDT_ARG__
+GFLAGS=-m32 -fPIC -shared -g
+LFLAGS=-m32 -g
+LD=gcc -m32 -fPIC -shared -g
+
+APPINCLUDE=-I$(SWHOME)/src/incl_pub -I$(SWHOME)/include -I./include
+APPLIBDIR=-L$(SWHOME)/lib -L$(SWWORK)/lib
+PLGDIR=$(SWHOME)/plugin
+BINDIR=$(SWHOME)/bin
+LIBDIR=$(SWHOME)/lib
+AGTLIBDIR=$(SWHOME)/agent_lib
+APPLIB= -ldl
+ICONV=
+VERSION=2.0.0
+COMMLIB=-lstatgrab
+

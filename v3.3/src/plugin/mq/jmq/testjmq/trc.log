@@ -1,0 +1,60 @@
+@26673268|20160428|16:45:20.688|I [jmqtest.c][48] Find class success!
+@26673268|20160428|16:45:20.688|I [jmqtest.c][58] Found constructor method!
+@26673268|20160428|16:45:20.688|I [jmqtest.c][67] ready create New Object.
+@26673268|20160428|16:45:20.688|I [jmqtest.c][79] New object success!
+@26673268|20160428|16:45:20.688|I [jmqtest.c[88] Get init method success!
+@26673268|20160428|16:45:20.840|I [jmqtest.c][97] Call init method success!
+@26673268|20160428|16:45:20.840|I [jmqtest.c][115] Javainit success!
+@26673268|20160428|16:45:20.840|I [jmqtest.c[186] Get initSend method success!
+@26673268|20160428|16:45:21.035|I [jmqtest.c][195] Call initSend method success!
+@26673268|20160428|16:45:21.035|I [jmqtest.c][207] Get sendMessage method success!
+@26673268|20160428|16:45:21.035|I [jmqtest.c[152] Get initRecv method success!
+@26673268|20160428|16:45:21.041|I [jmqtest.c][161] Call initRecv method success!
+@26673268|20160428|16:45:21.041|I [jmqtest.c][172] Get recvMessage method success!
+@26673268|20160428|16:45:21.041|I [jmqtest.c][386] code g2u before message=[11111111111111111c我的嘉盛]len=[55]
+@26673268|20160428|16:45:21.041|I [jmqtest.c][387] len=[55]
+
+Displacement -1--2--3--4--5--6--7--8-Hex-0--1--2--3--4--5--6  --ASCII Value--
+00000(00000) 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31  1111111111111111
+00016(00010) 31 63 ce d2 b5 c4 bc ce ca a2 00 66 64 77 64 6a  1c我的嘉盛*fdwdj
+00032(00020) 77 6b 6c 64 64 64 64 64 64 64 64 64 64 64 64 64  wklddddddddddddd
+00048(00030) 64 64 64 64 64 64 64                             ddddddd
+@26673268|20160428|16:45:21.041|I recv semd msg[jmqtest.c][261] len=[55]
+
+Displacement -1--2--3--4--5--6--7--8-Hex-0--1--2--3--4--5--6  --ASCII Value--
+00000(00000) 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31  1111111111111111
+00016(00010) 31 63 ce d2 b5 c4 bc ce ca a2 00 66 64 77 64 6a  1c我的嘉盛*fdwdj
+00032(00020) 77 6b 6c 64 64 64 64 64 64 64 64 64 64 64 64 64  wklddddddddddddd
+00048(00030) 64 64 64 64 64 64 64                             ddddddd
+@26673268|20160428|16:45:21.074|I [jmqtest.c][409] recv java msg:[11111111111111111c我的嘉盛]len=[0]
+@26673268|20160428|16:45:21.144|I [jmqtest.c][335] Destroy JavaVM!
+@34078802|20160428|16:45:56.228|I [jmqtest.c][47] Find class success!
+@34078802|20160428|16:45:56.228|I [jmqtest.c][57] Found constructor method!
+@34078802|20160428|16:45:56.228|I [jmqtest.c][66] ready create New Object.
+@34078802|20160428|16:45:56.228|I [jmqtest.c][78] New object success!
+@34078802|20160428|16:45:56.228|I [jmqtest.c[87] Get init method success!
+@34078802|20160428|16:45:56.353|I [jmqtest.c][96] Call init method success!
+@34078802|20160428|16:45:56.353|I [jmqtest.c][114] Javainit success!
+@34078802|20160428|16:45:56.353|I [jmqtest.c[185] Get initSend method success!
+@34078802|20160428|16:45:56.538|I [jmqtest.c][194] Call initSend method success!
+@34078802|20160428|16:45:56.538|I [jmqtest.c][206] Get sendMessage method success!
+@34078802|20160428|16:45:56.538|I [jmqtest.c[151] Get initRecv method success!
+@34078802|20160428|16:45:56.547|I [jmqtest.c][160] Call initRecv method success!
+@34078802|20160428|16:45:56.547|I [jmqtest.c][171] Get recvMessage method success!
+@34078802|20160428|16:45:56.547|I [jmqtest.c][385] code g2u before message=[11111111111111111c我的嘉盛]len=[55]
+@34078802|20160428|16:45:56.547|I [jmqtest.c][386] len=[55]
+
+Displacement -1--2--3--4--5--6--7--8-Hex-0--1--2--3--4--5--6  --ASCII Value--
+00000(00000) 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31  1111111111111111
+00016(00010) 31 63 ce d2 b5 c4 bc ce ca a2 00 66 64 77 64 6a  1c我的嘉盛*fdwdj
+00032(00020) 77 6b 6c 64 64 64 64 64 64 64 64 64 64 64 64 64  wklddddddddddddd
+00048(00030) 64 64 64 64 64 64 64                             ddddddd
+@34078802|20160428|16:45:56.547|I recv semd msg[jmqtest.c][260] len=[55]
+
+Displacement -1--2--3--4--5--6--7--8-Hex-0--1--2--3--4--5--6  --ASCII Value--
+00000(00000) 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31  1111111111111111
+00016(00010) 31 63 ce d2 b5 c4 bc ce ca a2 00 66 64 77 64 6a  1c我的嘉盛*fdwdj
+00032(00020) 77 6b 6c 64 64 64 64 64 64 64 64 64 64 64 64 64  wklddddddddddddd
+00048(00030) 64 64 64 64 64 64 64                             ddddddd
+@34078802|20160428|16:45:56.559|I [jmqtest.c][408] recv java msg:[11111111111111111c我的嘉盛]len=[0]
+@34078802|20160428|16:45:56.638|I [jmqtest.c][334] Destroy JavaVM!

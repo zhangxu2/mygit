@@ -1,0 +1,21 @@
+<CBM>
+	<TYPE_ALYZ>
+  		<ANALYZE>
+			<ITEM NAME="sep_processor" CFG="sep.xml" LIB="" FUNCTION="" >
+				<CHECK BEGIN="4" LENGTH="3" INCLUDE="sep" NAME="" VALUE="" FUNCTION=""/>
+				<CHECK BEGIN="4" LENGTH="3" INCLUDE="sep" />
+				<CHECK BEGIN="4" LENGTH="3" INCLUDE="sep" />
+				<CHECK BEGIN="4" LENGTH="3" INCLUDE="sep" />
+			</ITEM>
+		</ANALYZE>
+		<INTEGRATE>
+			<ITEM NAME="sep_processor" CFG="sep.xml" LIB="" FUNCTION="" >
+				<CHECK BEGIN="4" LENGTH="3" INCLUDE="sep" NAME="" VALUE="" FUNCTION="libfun.so/checkfun" />
+				<CHECK BEGIN="4" LENGTH="3" INCLUDE="sep" NAME="" VALUE="" FUNCTION="" />
+				<CHECK BEGIN="4" LENGTH="3" INCLUDE="sep" NAME="" VALUE="" FUNCTION="" />
+				<CHECK BEGIN="4" LENGTH="3" INCLUDE="sep" NAME="" VALUE="" FUNCTION="" />
+			</ITEM>
+		</INTEGRATE>
+ 	</TYPE_ALYZ>
+</CBM>
+

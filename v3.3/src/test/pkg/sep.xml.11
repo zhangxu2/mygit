@@ -1,0 +1,315 @@
+<?xml version= "10" encoding= "GBK" ?>
+<CBM PKGTYPE="SEP" >
+	<ANALYZE>
+		<FIRSTWORK>
+			<ITEM NAME="#chnl" BEGIN="8" LENGTH="2" />
+		</FIRSTWORK>
+		<HEAD>
+			<ITEM NAME="#len" 			TYPE="a8"  	/>
+			<ITEM NAME="#chnl_no" 		TYPE="a2"  	/>
+			<ITEM NAME="#tel" 			TYPE="a6"  	/>
+			<ITEM NAME="#sys_trace_no" 	TYPE="a9" 	/>
+			<ITEM NAME="#sys_date" 		TYPE="a8"  	/>
+			<ITEM NAME="#pkgtype" 		TYPE="a1"  	/>
+			<ITEM NAME="#tx_flow_ind" 	TYPE="a1"  	/>
+			<ITEM NAME="#wd_ind" 		TYPE="a1"  	/>
+			<ITEM NAME="#tn_ind" 		TYPE="a1"  	/>
+			<ITEM NAME="#sys_addr" 		TYPE="a50" 	/>
+			<ITEM NAME="#result" 		TYPE="a1"  	/>
+			<ITEM NAME="#file_snd" 		TYPE="a1"  	/>
+			<ITEM NAME="#tx_br_no" 		TYPE="a12" 	/>
+			<ITEM NAME="#sys_id" 		TYPE="a4" CONST="9876"	/>
+			<ITEM NAME="#sub_sys_id" 	TYPE="a4" CONST="1234" 	/>
+			<ITEM NAME="#sys_map" 		TYPE="a20"  />
+			<ITEM NAME="#msgtype"	    TYPE="a5"  	/>
+		</HEAD>		
+		<PACKAGE RESPCD="#sys12">
+			<ITEM NAME="#sys2"		SEP="|" />
+			<ITEM NAME="#sys3"		SEP="|" />
+			<ITEM NAME="#sys4"		SEP="|" />
+			<ITEM NAME="#sys5"		SEP="|" />
+			<ITEM NAME="#sys6"		SEP="|" />
+			<ITEM NAME="#sys7"		SEP="|" />
+			<ITEM NAME="#sys8"		SEP="|" />
+			<ITEM NAME="#sys9"		SEP="|" />
+			<ITEM NAME="#sys10"		SEP="|" />
+			<ITEM NAME="#sys11"		SEP="|" />
+			<ITEM NAME="#sys12"		SEP="|" />
+			<ITEM NAME="#sys13"		SEP="|" />
+			<ITEM NAME="#sys14"		SEP="|" />
+			<ITEM NAME="#sys15"		SEP="|" />
+			<ITEM NAME="#sys16"		SEP="|" />
+			<ITEM NAME="#sys17"		SEP="|" />
+			<ITEM NAME="#sys18"		SEP="|" />
+			<ITEM NAME="#sys19"		SEP="|" LENCODE="HUA"/>
+			<ITEM NAME="#sys20"		SEP="|" />
+			<ITEM NAME="#sys21"		SEP="|" />
+			<ITEM NAME="#sys22"		SEP="|" />
+			<ITEM NAME="#sys23"		SEP="|" />
+			<ITEM NAME="#sys24"		SEP="|" />
+			<ITEM NAME="#sys25"		SEP="|" />
+			<ITEM NAME="#sys26"		SEP="|" />
+			<ITEM NAME="#sys27"		SEP="|" />
+			<ITEM NAME="#sys28"		SEP="|" />
+			<ITEM NAME="#sys29"		SEP="|" />
+			<ITEM NAME="#sys30"		SEP="|" />
+			<ITEM NAME="#sys31"		SEP="|" />
+			<ITEM NAME="#sys32"		SEP="|" />
+			<ITEM NAME="#sys33"		SEP="|" />
+			<ITEM NAME="#sys34"		SEP="|" />
+			<ITEM NAME="#sys35"		SEP="|" />
+			<ITEM NAME="#sys36"		SEP="|" />
+			<ITEM NAME="#sys37"		SEP="|" />
+			<ITEM NAME="#sys38"		SEP="|" />
+			<ITEM NAME="#sys39"		SEP="|" />
+			<ITEM NAME="#sys40"		SEP="|" />
+			<ITEM NAME="#sys41"		SEP="|" />
+			<ITEM NAME="#sys42"		SEP="|" />
+			<ITEM NAME="#sys43"		SEP="|" />
+			<ITEM NAME="#sys44"		SEP="|" />
+			<ITEM NAME="#sys45"		SEP="|" />
+			<ITEM NAME="#sys46"		SEP="|" />
+			<ITEM NAME="#sys47"		SEP="|" />
+			<ITEM NAME="#sys48"		SEP="|" />
+			<ITEM NAME="#sys49"		SEP="|" />
+			<ITEM NAME="#sys50" TYPE="a4096"		SEP="|" />
+			<ITEM NAME="#sys51"		SEP="|" />
+			<ITEM NAME="#sys52"		SEP="|" />
+			<ITEM NAME="#sys53"		SEP="|" />
+			<ITEM NAME="#sys54"		SEP="|" />
+			<ITEM NAME="#sys55"		SEP="|" />
+			<ITEM NAME="#sys56"		SEP="|" />
+			<ITEM NAME="#sys57"		SEP="|" />
+			<ITEM NAME="#sys58"		SEP="|" />
+			<ITEM NAME="#sys59"		SEP="|" />
+			<ITEM NAME="#sys60" TYPE="a4096"		SEP="|" />
+			<ITEM NAME="#sys61"		SEP="|" />
+			<ITEM NAME="#sys62"		SEP="|" />
+			<ITEM NAME="#sys63"		SEP="|" />
+			<ITEM NAME="#sys64"		SEP="|" />
+			<ITEM NAME="#sys65"		SEP="|" />
+			<ITEM NAME="#sys66"		SEP="|" />
+			<ITEM NAME="#sys67"		SEP="|" />
+			<ITEM NAME="#sys68"		SEP="|" />
+			<ITEM NAME="#sys69"		SEP="|" />
+			<ITEM NAME="#sys70"		SEP="|" />
+			<ITEM NAME="#sys71"		SEP="|" />
+			<ITEM NAME="#sys72"		SEP="|" />
+			<ITEM NAME="#sys73"		SEP="|" />
+			<ITEM NAME="#sys74"		SEP="|" />
+			<ITEM NAME="#sys75"		SEP="|" />
+			<ITEM NAME="#sys76"		SEP="|" />
+			<ITEM NAME="#sys77"		SEP="|" />
+			<ITEM NAME="#sys78"		SEP="|" />
+			<ITEM NAME="#sys79"		SEP="|" />
+			<ITEM NAME="#sys80"		SEP="|" />
+			<ITEM NAME="#sys81"		SEP="|" />
+			<ITEM NAME="#sys82"		SEP="|" />
+			<ITEM NAME="#sys83"		SEP="|" />
+			<ITEM NAME="#sys84"		SEP="|" />
+			<ITEM NAME="#sys85"		SEP="|" />
+			<ITEM NAME="#sys86"		SEP="|" />
+			<ITEM NAME="#sys87"		SEP="|" />
+			<ITEM NAME="#sys88"		SEP="|" />
+			<ITEM NAME="#sys89"		SEP="|" />
+			<ITEM NAME="#sys90"		SEP="|" />
+			<ITEM NAME="#sys91"		SEP="|" />
+			<ITEM NAME="#sys92"		SEP="|" />
+			<ITEM NAME="#sys93"		SEP="|" />
+			<ITEM NAME="#sys94"		SEP="|" />
+			<ITEM NAME="#sys95"		SEP="|" />
+			<ITEM NAME="#sys96"		SEP="|" />
+			<ITEM NAME="#sys97"		SEP="|" />
+			<ITEM NAME="#sys98"		SEP="|" />
+			<ITEM NAME="#sys99"		SEP="|" />
+			<ITEM NAME="#sys100"	SEP="|" />
+			<ITEM NAME="#sys101"	SEP="|" />
+			<ITEM NAME="#sys102"	SEP="|" />
+			<ITEM NAME="#sys103"	SEP="|" />
+			<ITEM NAME="#sys104"	SEP="|" />
+			<ITEM NAME="#sys105"	SEP="|" />
+			<ITEM NAME="#sys106"	SEP="|" />
+			<ITEM NAME="#sys107"	SEP="|" />
+			<ITEM NAME="#sys108"	SEP="|" CODE="BCD" />
+			<ITEM NAME="#sys109"	SEP="|" />
+			<ITEM NAME="#sys110"	SEP="|" CODE="BCD" />
+			<ITEM NAME="#sys111"	SEP="|" />
+			<ITEM NAME="#sys112"	SEP="|" />
+			<ITEM NAME="#sys113"	SEP="|" />
+			<ITEM NAME="#sys114"	SEP="|" />
+			<ITEM NAME="#sys115"	SEP="|" />
+			<ITEM NAME="#sys116"	SEP="|" />
+			<ITEM NAME="#sys117"	SEP="|" />
+			<ITEM NAME="#sys118"	SEP="|" />
+			<ITEM NAME="#sys119"	SEP="|" />
+			<ITEM NAME="#sys120"	SEP="|" />
+			<ITEM NAME="#sys121"	SEP="|" />
+			<ITEM NAME="#sys122"	SEP="|" />
+			<ITEM NAME="#sys123"	SEP="|" />
+			<ITEM NAME="#sys124"	SEP="|" />
+			<ITEM NAME="#sys125"	SEP="|" />
+			<ITEM NAME="#sys126"	SEP="|" CODE="BCD" />
+			<ITEM NAME="#sys127"	SEP="|" />
+			<ITEM NAME="#sys128"	SEP="|" CODE="BCD" />
+		</PACKAGE>
+		<LASTWORK>
+			<ITEM NAME="$cbmkey" VALUE="#sys44[0,1]+#sys45[6,7]+#sys127" />
+		</LASTWORK>
+	</ANALYZE>
+	<INTEGRATE>
+		<FIRSTWORK>
+			<ITEM NAME="#sys16"	TYPE="n4" />
+		</FIRSTWORK>
+		<HEAD>
+			<ITEM NAME="#len" 			TYPE="a8"   FLAG="1" />
+			<ITEM NAME="#chnl_no" 		TYPE="a2" 	FLAG="1" />
+			<ITEM NAME="#tel" 			TYPE="a6" 	FLAG="1" />
+			<ITEM NAME="#sys_trace_no" 	TYPE="a9"	FLAG="1" />
+			<ITEM NAME="#sys_date" 		TYPE="a8" 	FLAG="1" />
+			<ITEM NAME="#pkgtype" 		TYPE="a1" 	FLAG="1" />
+			<ITEM NAME="#tx_flow_ind" 	TYPE="a1" 	FLAG="1" />
+			<ITEM NAME="#wd_ind" 		TYPE="a1" 	FLAG="1" />
+			<ITEM NAME="#tn_ind" 		TYPE="a1" 	FLAG="1" />
+			<ITEM NAME="#sys_addr" 		TYPE="a50"	FLAG="1" />
+			<ITEM NAME="#result" 		TYPE="a1" 	FLAG="1" />
+			<ITEM NAME="#file_snd" 		TYPE="a1" 	FLAG="1" />
+			<ITEM NAME="#tx_br_no" 		TYPE="a12"	FLAG="1" />
+			<ITEM NAME="#sys_id" 		TYPE="a4" 	FLAG="1" CONST="9876" />
+			<ITEM NAME="#sub_sys_id" 	TYPE="a4" 	FLAG="1" CONST="1234" />
+			<ITEM NAME="#sys_map" 		TYPE="a20"  FLAG="1" />
+			<ITEM NAME="#msgtype"	    TYPE="a5"  	FLAG="1"	CONST="01001" />
+		</HEAD>
+		<PACKAGE RESPCD="#sys12">
+			<ITEM NAME="#sys2"		SEP="|" />
+			<ITEM NAME="#sys3"		SEP="|" />
+			<ITEM NAME="#sys4"		SEP="|" />
+			<ITEM NAME="#sys5"		SEP="|" />
+			<ITEM NAME="#sys6"		SEP="|" />
+			<ITEM NAME="#sys7"		SEP="|" />
+			<ITEM NAME="#sys8"		SEP="|" />
+			<ITEM NAME="#sys9"		SEP="|" />
+			<ITEM NAME="#sys10"		SEP="|" />
+			<ITEM NAME="#sys11"		SEP="|" />
+			<ITEM NAME="#sys12"		SEP="|" />
+			<ITEM NAME="#sys13"		SEP="|" />
+			<ITEM NAME="#sys14"		SEP="|" />
+			<ITEM NAME="#sys15"		SEP="|" />
+			<ITEM NAME="#sys16"		SEP="|" />
+			<ITEM NAME="#sys17"		SEP="|" />
+			<ITEM NAME="#sys18"		SEP="|" />
+			<ITEM NAME="#sys19"		SEP="|" LENCODE="HUA"/>
+			<ITEM NAME="#sys20"		SEP="|" />
+			<ITEM NAME="#sys21"		SEP="|" />
+			<ITEM NAME="#sys22"		SEP="|" />
+			<ITEM NAME="#sys23"		SEP="|" />
+			<ITEM NAME="#sys24"		SEP="|" />
+			<ITEM NAME="#sys25"		SEP="|" />
+			<ITEM NAME="#sys26"		SEP="|" />
+			<ITEM NAME="#sys27"		SEP="|" />
+			<ITEM NAME="#sys28"		SEP="|" />
+			<ITEM NAME="#sys29"		SEP="|" />
+			<ITEM NAME="#sys30"		SEP="|" />
+			<ITEM NAME="#sys31"		SEP="|" />
+			<ITEM NAME="#sys32"		SEP="|" />
+			<ITEM NAME="#sys33"		SEP="|" />
+			<ITEM NAME="#sys34"		SEP="|" />
+			<ITEM NAME="#sys35"		SEP="|" />
+			<ITEM NAME="#sys36"		SEP="|" />
+			<ITEM NAME="#sys37"		SEP="|" />
+			<ITEM NAME="#sys38"		SEP="|" />
+			<ITEM NAME="#sys39"		SEP="|" />
+			<ITEM NAME="#sys40"		SEP="|" />
+			<ITEM NAME="#sys41"		SEP="|" />
+			<ITEM NAME="#sys42"		SEP="|" />
+			<ITEM NAME="#sys43"		SEP="|" />
+			<ITEM NAME="#sys44"		SEP="|" />
+			<ITEM NAME="#sys45"		SEP="|" />
+			<ITEM NAME="#sys46"		SEP="|" />
+			<ITEM NAME="#sys47"		SEP="|" />
+			<ITEM NAME="#sys48"		SEP="|" />
+			<ITEM NAME="#sys49"		SEP="|" />
+			<ITEM NAME="#sys50" TYPE="a4096" BLANK="1"		SEP="|" />
+			<ITEM NAME="#sys51"		SEP="|" />
+			<ITEM NAME="#sys52"		SEP="|" />
+			<ITEM NAME="#sys53"		SEP="|" />
+			<ITEM NAME="#sys54"		SEP="|" />
+			<ITEM NAME="#sys55"		SEP="|" />
+			<ITEM NAME="#sys56"		SEP="|" />
+			<ITEM NAME="#sys57"		SEP="|" />
+			<ITEM NAME="#sys58"		SEP="|" />
+			<ITEM NAME="#sys59"		SEP="|" />
+			<ITEM NAME="#sys60" TYPE="a4096" BLANK="1"		SEP="|" />
+			<ITEM NAME="#sys61"		SEP="|" />
+			<ITEM NAME="#sys62"		SEP="|" />
+			<ITEM NAME="#sys63"		SEP="|" />
+			<ITEM NAME="#sys64"		SEP="|" />
+			<ITEM NAME="#sys65"		SEP="|" />
+			<ITEM NAME="#sys66"		SEP="|" />
+			<ITEM NAME="#sys67"		SEP="|" />
+			<ITEM NAME="#sys68"		SEP="|" />
+			<ITEM NAME="#sys69"		SEP="|" />
+			<ITEM NAME="#sys70"		SEP="|" />
+			<ITEM NAME="#sys71"		SEP="|" />
+			<ITEM NAME="#sys72"		SEP="|" />
+			<ITEM NAME="#sys73"		SEP="|" />
+			<ITEM NAME="#sys74"		SEP="|" />
+			<ITEM NAME="#sys75"		SEP="|" />
+			<ITEM NAME="#sys76"		SEP="|" />
+			<ITEM NAME="#sys77"		SEP="|" />
+			<ITEM NAME="#sys78"		SEP="|" />
+			<ITEM NAME="#sys79"		SEP="|" />
+			<ITEM NAME="#sys80"		SEP="|" />
+			<ITEM NAME="#sys81"		SEP="|" />
+			<ITEM NAME="#sys82"		SEP="|" />
+			<ITEM NAME="#sys83"		SEP="|" />
+			<ITEM NAME="#sys84"		SEP="|" />
+			<ITEM NAME="#sys85"		SEP="|" />
+			<ITEM NAME="#sys86"		SEP="|" />
+			<ITEM NAME="#sys87"		SEP="|" />
+			<ITEM NAME="#sys88"		SEP="|" />
+			<ITEM NAME="#sys89"		SEP="|" />
+			<ITEM NAME="#sys90"		SEP="|" />
+			<ITEM NAME="#sys91"		SEP="|" />
+			<ITEM NAME="#sys92"		SEP="|" />
+			<ITEM NAME="#sys93"		SEP="|" />
+			<ITEM NAME="#sys94"		SEP="|" />
+			<ITEM NAME="#sys95"		SEP="|" />
+			<ITEM NAME="#sys96"		SEP="|" />
+			<ITEM NAME="#sys97"		SEP="|" />
+			<ITEM NAME="#sys98"		SEP="|" />
+			<ITEM NAME="#sys99"		SEP="|" />
+			<ITEM NAME="#sys100"	SEP="|" />
+			<ITEM NAME="#sys101"	SEP="|" />
+			<ITEM NAME="#sys102"	SEP="|" />
+			<ITEM NAME="#sys103"	SEP="|" />
+			<ITEM NAME="#sys104"	SEP="|" />
+			<ITEM NAME="#sys105"	SEP="|" />
+			<ITEM NAME="#sys106"	SEP="|" />
+			<ITEM NAME="#sys107"	SEP="|" />
+			<ITEM NAME="#sys108"	SEP="|" CODE="BCD" />
+			<ITEM NAME="#sys109"	SEP="|" />
+			<ITEM NAME="#sys110"	SEP="|" CODE="BCD" />
+			<ITEM NAME="#sys111"	SEP="|" />
+			<ITEM NAME="#sys112"	SEP="|" />
+			<ITEM NAME="#sys113"	SEP="|" />
+			<ITEM NAME="#sys114"	SEP="|" />
+			<ITEM NAME="#sys115"	SEP="|" />
+			<ITEM NAME="#sys116"	SEP="|" />
+			<ITEM NAME="#sys117"	SEP="|" />
+			<ITEM NAME="#sys118"	SEP="|" />
+			<ITEM NAME="#sys119"	SEP="|" />
+			<ITEM NAME="#sys120"	SEP="|" />
+			<ITEM NAME="#sys121"	SEP="|" />
+			<ITEM NAME="#sys122"	SEP="|" />
+			<ITEM NAME="#sys123"	SEP="|" />
+			<ITEM NAME="#sys124"	SEP="|" />
+			<ITEM NAME="#sys125"	SEP="|" />
+			<ITEM NAME="#sys126"	SEP="|" CODE="BCD" />
+			<ITEM NAME="#sys127"	SEP="|" />
+			<ITEM NAME="#sys128"	SEP="|" CODE="BCD" />
+		</PACKAGE>
+		<LASTWORK>
+			<ITEM NAME="#len"	LENGTH="[0..7]"		MYSELF="FALSE" />
+		</LASTWORK>
+	</INTEGRATE>
+</CBM>

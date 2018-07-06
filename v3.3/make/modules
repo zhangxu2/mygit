@@ -1,0 +1,1081 @@
+#!/bin/sh
+
+MAKEDIR=$SWHOME/make
+CONDIR=$SWHOME/src/plugin
+DATADIR=$SWHOME/src/udbc
+MQAIX=
+TEAAIX=
+OBJORA=
+OBJTUX=
+OBJTUXALLL=
+OBJTUXF=
+OBJINF=
+OBJMQ=
+OBJMQC=
+OBJMQCOM=
+OBJMJ=
+OBJCICS=
+OBJTEA=
+OBJTEAALL=
+OBJTEAF=
+OBJCICS=
+ORALIB=
+MQFLAG=
+TLQFLAG=
+files=
+PLGMQFLAG=
+DB2LIB=
+
+if [ $# -ne 0 ];then
+	s=`echo $1 | awk '{if($0~/so/) print 1}'`
+	if [ "$s" = "1" ];then
+		files=$1
+	else
+		files=
+	fi
+fi
+
+if [ "$SYSTYPE" = " -D__SYSTYPE_64__ " ];then
+	if [ -d "$MQDIR/lib64" ];then
+		MQAIX='64'
+	fi
+	if [ -f "$TEADIR/lib/teapilib64" ];then
+		TEAAIX='64'
+	fi
+fi
+
+name=`uname -s | tr [A-Z] [a-z]` > /dev/null
+if [ "$name" = "aix" ];then
+	aixbit=`ls -l /unix | awk '{if($0~"unix_64") print 1;else print 0}'` 
+	if [ $aixbit = 1 ];then
+		ORALIB="-lclntsh -lpthread -ldl -lc -lm -lpthread -lodm -lbsd_r -lld -lperfstat"
+	else
+		ORALIB="-lclntsh -lpthread -lc `cat $ORACLE_HOME/lib/sysliblist`"
+	fi
+else
+	ORALIB="-lclntsh -lpthread -lc `cat $ORACLE_HOME/lib/sysliblist`"
+fi
+
+name=`uname -m`
+if [ "$name" = "x86_64" ] || [ "$name" = "ppc64" ] || [ "$name" = "s390x" ] || [ "$name" = "ia64" ]
+then
+	DB2LIB="lib64"
+else
+	DB2LIB="lib32"
+fi
+
+###############oracle#######################
+oracle_fun()
+{
+mkdir -p $DATADIR/ora
+
+if [ -f "$DATADIR/ora/Makefile" ]
+then
+		rm -f $DATADIR/ora/Makefile
+fi
+
+cat << END > $DATADIR/ora/Makefile
+
+include $MAKEDIR/sw.env
+
+PROC = proc
+PROCINCLUDE = include=\$(ORACLE_HOME)/precomp/public  include=\$(SWHOME)/src/incl_pub include=.
+
+USRLIB=  -ldl -lclntsh -lswbase -losbase
+ORALIB=$ORALIB
+INCLUDE_PATH= -I.\\
+		-I\$(ORACLE_HOME)/precomp/public \\
+		-I\$(ORACLE_HOME)/rdbms/public \\
+		-I\$(ORACLE_HOME)/rdbms/demo\\
+		-I\$(SWHOME)/src/incl_pub
+
+LIB_PATH= -L\$(SWWORK)/txlib \\
+		-L\$(ORACLE_HOME)/lib
+
+OBJS1 = db_ora_opt.o
+OBJS2 = db_ora.o
+TARGET1 = libswora.so
+TARGET2 = libswora_pc.so
+TARGETS=\$(TARGET1) \$(TARGET2)
+all: \$(TARGETS)
+
+\$(TARGET1): \$(OBJS1)
+	\$(LD) -o \$@ \$(OBJS1) \$(LIB_PATH) \$(APPLIBDIR) \$(USRLIB) \$(ORALIB)
+	rm -f \$(LIBDIR)/\$@
+	rm -f \$(LIBDIR)/\$@.\$(VERSION)
+	mv -f \$@ \$(LIBDIR)/\$@.\$(VERSION)
+	ln -s \$@.\$(VERSION) \$(LIBDIR)/\$@
+	@rm -f *.o
+	@echo "\$@ is OK !"
+	
+\$(TARGET2): \$(OBJS2)
+	\$(LD) -o \$@ \$(OBJS2) \$(LIB_PATH) \$(APPLIBDIR) \$(USRLIB) \$(ORALIB)
+	rm -f \$(LIBDIR)/\$@
+	rm -f \$(LIBDIR)/\$@.\$(VERSION)
+	mv -f \$@ \$(LIBDIR)/\$@.\$(VERSION)
+	ln -s \$@.\$(VERSION) \$(LIBDIR)/\$@
+	@rm -f *.o
+	@echo "\$@ is OK !"
+	
+.SUFFIXES: .pc .c .cpp .o
+.pc.o:                                                                                                                             
+	\$(PROC) \$(PROCINCLUDE) dbms=v7 unsafe_null=yes lines=yes iname=\$*.pc                                                       
+	\$(CC) \$(CFLAGS) \$(INCLUDE_PATH) \$(APPINCLUDE) -c \$*.c                                                                                      
+	@rm -f \$*.c                                                                                                                
+	@rm -f \$*.lis
+.c.o:
+	\$(CC)  \$(CFLAGS) \$(INCLUDE_PATH) \$(APPINCLUDE) -c \$*.c
+
+clean:
+	rm -f *.o *.so *~
+
+END
+}
+
+##################informix#################
+informix_fun()
+{
+mkdir -p $DATADIR/ifx
+cat << END > $DATADIR/ifx/Makefile
+
+include $MAKEDIR/sw.env
+
+ECC = \$(INFORMIXDIR)/bin/esql
+INCLUDE = -I.\\
+		-I\$(INFORMIXDIR)/incl/esql \\
+		-I\$(INFORMIXDIR)/incl/public \\
+		-I\$(SWHOME)/src/incl_pub
+
+LIB_PATH = -L\$(INFORMIXDIR)/lib \\
+		-L\$(INFORMIXDIR)/lib/esql
+
+ELIBS =\`esql -libs\` -lswbase
+
+OBJS = db_ifx_opt.o
+TARGET = libswifx.so
+
+.PHONY: all clean
+
+all: \$(TARGET) clean 
+\$(TARGET): \$(OBJS)
+	\$(LD) -o \$(TARGET) \$(OBJS) \$(LIB_PATH) \$(APPLIBDIR) \$(INCLUDE) \$(ELIBS)
+	rm -f \$(LIBDIR)/\$@
+	rm -f \$(LIBDIR)/\$@.\$(VERSION)
+	mv -f \$@ \$(LIBDIR)/\$@.\$(VERSION)
+	ln -s \$@.\$(VERSION) \$(LIBDIR)/\$@
+	@rm -f *.o
+	@echo "\$@ is OK !" 
+
+.SUFFIXES: .ec .c .o
+
+.ec.o:
+	\$(ECC) \$(CFLAGS) \$(INCLUDE) -c \$*.ec
+
+.c.o:
+	\$(CC) \$(CFLAGS) \$(INCLUDE) -c \$*.c
+
+
+clean: 
+	echo \$(INCLUDE)
+	rm -fr \$(OBJS) \$(TARGET) db_ifx_opt.c  
+
+END
+}
+
+##################db2#################
+db2_fun()
+{
+mkdir -p $DATADIR/odbc
+cat << END > $DATADIR/odbc/Makefile
+
+include $MAKEDIR/sw.env
+
+INCLUDE = -I.\\
+		-I\$(DB2_HOME)/include \\
+		-I\$(SWHOME)/src/incl_pub
+
+LIB_PATH = -L\$(DB2_HOME)/\$(DB2LIB) \\
+		-L\$(SWHOME)/lib
+
+LIBS = -ludbc -ldl -lswbase -ldb2
+
+OBJS = db_odbc_opt.o
+TARGET = libswodbc.so
+
+.PHONY: all clean
+
+all: \$(TARGET) clean 
+\$(TARGET): \$(OBJS)
+	\$(LD) -o \$(TARGET) \$(OBJS) \$(LIB_PATH) \$(INCLUDE) \$(LIBS)
+	rm -f \$(LIBDIR)/\$@
+	rm -f \$(LIBDIR)/\$@.\$(VERSION)
+	mv -f \$@ \$(LIBDIR)/\$@.\$(VERSION)
+	ln -s \$@.\$(VERSION) \$(LIBDIR)/\$@
+	@rm -f *.o
+	@echo "\$@ is OK !" 
+
+.SUFFIXES: .c .o
+
+.c.o:
+	\$(CC) \$(CFLAGS) \$(INCLUDE) -c \$*.c
+
+
+clean: 
+	rm -fr \$(OBJS) \$(TARGET)  
+
+END
+}
+########################tux################
+tux_fun()
+{
+mkdir -p $CONDIR/tux
+TUXFIN=
+if [ -f "${TUXDIR}/lib/wstpinit.o" ]; then
+TUXFIN='$(TUXDIR)/lib/wstpinit.o'
+fi
+ 
+cat << END > $CONDIR/tux/Makefile
+
+include $MAKEDIR/sw.env
+
+TUXDIR=$TUXDIR
+TUXINCL = -I\$(TUXDIR)/include
+TUXLIB = -L\$(TUXDIR)/lib
+USERLIB_TUX = $TUXFIN -lwsc -lbuft -lwsc -lgpnet -lfml -lfml32 -lengine -lpthread
+
+USERLIB = -losbase -lswpack  -lswlsn -lswbase -ldl
+TARGETS = tuxsc.so \
+	  tuxlc.so \
+	  tuxcall.so
+
+all:   \$(TARGETS) clean
+
+.SUFFIXES: .c .o .so
+.c.o:
+	\$(CC) \$(CFLAGS) \$(APPINCLUDE) \$(TUXINCL) -c \$*.c
+.o.so:
+	\$(LD) -o \$*.so \$*.o \$(APPLIBDIR) \$(TUXLIB) \$(USERLIB) \$(USERLIB_TUX)
+	rm -f \$(PLGDIR)/\$@
+	rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+
+clean:
+	rm -f *.*o
+END
+}
+
+#################tuxf#####################
+tuxf_fun()
+{
+mkdir -p $CONDIR/file/tuxf
+TUXFIN=
+if [ -f "${TUXDIR}/lib/wstpinit.o" ]; then
+TUXFIN='$(TUXDIR)/lib/wstpinit.o'
+fi
+ 
+cat << END > $CONDIR/file/tuxf/Makefile
+
+include $MAKEDIR/sw.env
+
+TUXDIR=$TUXDIR
+TUXINCL = -I\$(TUXDIR)/include
+TUXLIB = -L\$(TUXDIR)/lib
+USERLIB_TUX = $TUXFIN -lwsc -lbuft -lwsc -lgpnet -lfml -lfml32 -lengine -lpthread
+
+USERLIB = -lswbase -lswlsn -lc
+TARGETS = libfile.so
+OBJS = tux_7f.o tail_7f.o tailm_7f.o
+
+all: \$(TARGETS) clean
+
+\$(TARGETS): \$(OBJS)
+	\$(LD) -o \$@ \$(OBJS) \$(APPLIBDIR) \$(TUXLIB) \$(USERLIB) \$(USERLIB_TUX)
+	rm -f \$(PLGDIR)/\$@
+	rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv -f \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK !"
+
+.SUFFIXES: .c .o
+.c.o:
+	\$(CC) \$(CFLAGS) \$(APPINCLUDE) \$(TUXINCL) -c \$*.c
+
+clean:
+	rm -f *.*o
+END
+}
+
+
+#####################mqcom###############
+mqcom_fun()
+{
+
+mkdir -p $CONDIR/mq/com
+cat << END > $CONDIR/mq/com/Makefile
+
+include $MAKEDIR/sw.env
+
+USRLIB = -lswbase -lswlsn
+
+TARGET = libmqpub.so
+OBJS =	mq_comm.o
+
+all: \$(TARGET) clean
+
+.PHONY : compiler
+compiler:
+	\$(CC)  \$(CFLAGS) \$(APPINCLUDE) -c \$(CBJS)
+
+\$(TARGET):\$(OBJS)
+	\$(LD) -o \$@ \$(OBJS) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB)
+	rm -f \$(LIBDIR)/\$@
+	rm -f \$(LIBDIR)/\$@.\$(VERSION)
+	mv \$@ \$(LIBDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(LIBDIR)/\$@
+	@echo "\$@ is OK!"
+
+.SUFFIXES: .c .o .so
+.c.o:
+	\$(CC) \$(CFLAGS) \$(APPINCLUDE) -c \$*.c
+clean:
+	rm -f *.*o
+END
+}
+
+#####################mq###############
+mq_fun()
+{
+
+mkdir -p $CONDIR/mq/mqc
+cat << END > $CONDIR/mq/mqc/Makefile
+
+include $MAKEDIR/sw.env
+
+MQDIR=$MQDIR
+MQINCLUDEDIR=\$(MQDIR)/inc
+MQLIBDIR=\$(MQDIR)/lib$MQAIX
+USERLIB_MQ=-lmqm
+
+USRLIB = -lswbase -lswlsn -lswpack -lmqpub
+
+TARGET1= mqla.so
+OBJS1 =  mq_pub.o mqla.o
+
+TARGET2 = mqcall.so
+OBJS2 =   mq_pub.o mqcall.o
+
+TARGET3 = mqla_comm.so
+OBJS3 =  mq_pub.o mqla_comm.o
+
+TARGETS = \$(TARGET1) \$(TARGET2) \$(TARGET3)
+all: \$(TARGETS) clean
+
+.PHONY : compiler
+compiler:
+	\$(CC)  \$(CFLAGS) \$(APPINCLUDE) -c \$(CBJS)
+
+\$(TARGET1):\$(OBJS1)
+	\$(LD) -o \$@ \$(OBJS1) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB) -L\$(MQLIBDIR) \$(USERLIB_MQ)
+	rm -f \$(PLGDIR)/\$@
+	rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+
+\$(TARGET2):\$(OBJS2)
+	\$(LD) -o \$@ \$(OBJS2) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB) -L\$(MQLIBDIR) \$(USERLIB_MQ)
+	rm -f \$(PLGDIR)/\$@
+	rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+	
+\$(TARGET3):\$(OBJS3)
+	\$(LD) -o \$@ \$(OBJS3) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB) -L\$(MQLIBDIR) \$(USERLIB_MQ)
+	rm -f \$(PLGDIR)/\$@
+	rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+
+.SUFFIXES: .c .o .so
+.c.o:
+	\$(CC) \$(CFLAGS) \$(APPINCLUDE) -I\$(MQINCLUDEDIR) -c \$*.c
+clean:
+	rm -f *.*o
+END
+}
+
+mqx_fun()
+{
+
+mkdir -p $CONDIR/mq/cmqx
+cat << END > $CONDIR/mq/cmqx/Makefile
+
+include $MAKEDIR/sw.env
+
+MQDIR=$MQDIR
+MQINCLUDEDIR=\$(MQDIR)/inc
+MQLIBDIR=\$(MQDIR)/lib$MQAIX
+USERLIB_MQ=-lmqic
+
+USRLIB = -lswbase -lswlsn -lswpack -lmqpub
+
+TARGET1= mqlax.so
+OBJS1 =  mqx_pub.o mqlax.o
+
+TARGET3 = mqlax_comm.so
+OBJS3 =  mqx_pub.o mqlax_comm.o
+
+TARGETS = \$(TARGET1) \$(TARGET3)
+all: \$(TARGETS) clean
+
+.PHONY : compiler
+compiler:
+	\$(CC)  \$(CFLAGS) \$(APPINCLUDE) -c \$(CBJS)
+
+\$(TARGET1):\$(OBJS1)
+	\$(LD) -o \$@ \$(OBJS1) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB) -L\$(MQLIBDIR) \$(USERLIB_MQ)
+	rm -f \$(PLGDIR)/\$@
+	rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+
+\$(TARGET3):\$(OBJS3)
+	\$(LD) -o \$@ \$(OBJS3) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB) -L\$(MQLIBDIR) \$(USERLIB_MQ)
+	rm -f \$(PLGDIR)/\$@
+	rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+
+.SUFFIXES: .c .o .so
+.c.o:
+	\$(CC) \$(CFLAGS) \$(APPINCLUDE) -I\$(MQINCLUDEDIR) -c \$*.c
+clean:
+	rm -f *.*o
+END
+}
+
+#####################jmq###############
+jmq_fun()
+{
+
+mkdir -p $CONDIR/mq/jmq
+cat << END > $CONDIR/mq/jmq/Makefile
+
+include $MAKEDIR/sw.env
+
+USE_MACRO=$USE_MACRO1
+MQDIR=$MQDIR
+
+USRLIB = -lswbase -lswlsn -lswpack -lmqpub -L\$(JVMLIBDIR) -ljvm -L\$(NIOLIBDIR) -lnio
+
+TARGET1= jmqla.so
+OBJS1 = jmq.o jmqla.o
+
+TARGET2 = jmqcall.so
+OBJS2 = jmq.o jmqcall.o
+
+TARGET3= jmqla_comm.so
+OBJS3 = jmq.o jmqla_comm.o
+
+TARGETS = \$(TARGET1) \$(TARGET2) \$(TARGET3)
+all: \$(TARGETS) clean
+
+.PHONY : compiler
+compiler:
+	\$(CC)  \$(CFLAGS) \$(APPINCLUDE) -c \$(CBJS)
+
+\$(TARGET1):\$(OBJS1)
+	\$(LD) -o \$@ \$(OBJS1) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB)
+	rm -f \$(PLGDIR)/\$@
+	rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+
+\$(TARGET2):\$(OBJS2)
+	\$(LD) -o \$@ \$(OBJS2) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB)
+	rm -f \$(PLGDIR)/\$@
+	rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+
+
+\$(TARGET3):\$(OBJS3)
+	\$(LD) -o \$@ \$(OBJS3) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB)
+	rm -f \$(PLGDIR)/\$@
+	rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+
+.SUFFIXES: .c .o .so
+.c.o:
+	\$(CC) \$(CFLAGS) \$(USE_MACRO) \$(APPINCLUDE) -I\$(JAVA_HOME)/include -I\$(JAVA_HOME)/include/linux  -c \$*.c
+clean:
+	rm -f *.*o
+END
+}
+
+#########################tea################
+tea_fun()
+{
+mkdir -p $CONDIR/tea
+
+cat << END > $CONDIR/tea/Makefile 
+
+include $MAKEDIR/sw.env
+
+TONGEASYHOMEDIR=$TEADIR
+TELIBDIR=\$(TONGEASYHOMEDIR)/lib/teapilib$TEAAIX
+TEINCLDIR=\$(TONGEASYHOMEDIR)/incl
+
+USERLIB = -losbase -lswpack  -lswlsn -lswbase -ldl
+TARGET = teasc.so
+
+all: \$(TARGET) clean
+
+.SUFFIXES: .c .o .so
+.c.o:
+	\$(CC) \$(CFLAGS) \$(APPINCLUDE)  -I\$(TEINCLDIR) -c \$*.c
+.o.so:
+	\$(LD) -brtl -o \$*.so \$*.o \$(APPLIBDIR) \$(USERLIB) \$(TELIBDIR)
+	rm -f \$(PLGDIR)/\$@
+	rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+clean:
+	rm -f *.o *.so
+
+END
+
+}
+
+
+#########################teaf################
+teaf_fun()
+{
+mkdir -p $CONDIR/file/teaf
+
+cat << END > $CONDIR/file/teaf/Makefile 
+
+include $MAKEDIR/sw.env
+
+TONGEASYHOMEDIR=$TEADIR
+TELIBDIR=\$(TONGEASYHOMEDIR)/lib/teapilib$TEAAIX
+TEINCLDIR=\$(TONGEASYHOMEDIR)/incl
+
+USERLIB = -lswbase -lswlsn -lc
+TARGETS = libfile.so
+OBJS = tea_7f.o tail_7f.o tailm_7f.o
+
+all: \$(TARGETS) clean
+
+\$(TARGETS): \$(OBJS)
+	\$(LD) -o \$@ \$(OBJS) \$(APPLIBDIR) \$(USERLIB) \$(TELIBDIR)
+	rm -f \$(PLGDIR)/\$@
+	rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv -f \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK !"
+
+.SUFFIXES: .c .o
+.c.o:
+	\$(CC) \$(CFLAGS) \$(APPINCLUDE) -I\$(TEINCLDIR) -c \$*.c
+
+clean:
+	rm -f *.*o
+END
+}
+
+#############################tlq###########################
+tlq_fun()
+{
+mkdir -p $CONDIR/tlq
+
+cat << END > $CONDIR/tlq/Makefile 
+
+include $MAKEDIR/sw.env
+
+TLQHOMEDIR=$TLQDIR
+TLQINCLUDEDIR=\$(TLQHOMEDIR)/incl
+TLQLIBDIR=\$(TLQHOMEDIR)/lib
+TLQLIB=-ltl_api
+
+USRLIB = -lswbase -lswlsn -lswpack
+
+TARGETS2 = tlqla.so
+OBJS = tlq_pub.o tlqla.o
+
+TARGETS1 = tlqcall.so
+OBJS1 = tlq_pub.o tlqcall.o
+
+TARGETS = \$(TARGETS2) \$(TARGETS1)
+all: \$(TARGETS) clean
+
+.PHONY : compiler
+compiler:
+	\$(CC) \$(CFLAGS) \$(APPINCLUDE) -c \$(CBJS)
+	
+\$(TARGETS2):\$(OBJS)
+	\$(LD) -o \$@ \$(OBJS) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB) -L\$(TLQLIBDIR) \$(TLQLIB)
+	@rm -f \$(PLGDIR)/\$@
+	@rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+\$(TARGETS1):\$(OBJS1)
+	\$(LD) -o \$@ \$(OBJS1) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB) -L\$(TLQLIBDIR) \$(TLQLIB)
+	@rm -f \$(PLGDIR)/\$@
+	@rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+.SUFFIXES: .c .o .so
+.c.o:
+	\$(CC) \$(CFLAGS) \$(APPINCLUDE) -I\$(TLQINCLUDEDIR) -c \$*.c
+clean:
+	rm -f *.*o
+	
+END
+}
+#############################jms tlq###########################
+jtlq_fun()
+{
+mkdir -p $CONDIR/tlq
+cat << END > $CONDIR/tlq/Makefile 
+include $MAKEDIR/sw.env
+TLQHOMEDIR=$TLQDIR
+TLQINCLUDEDIR=\$(TLQHOMEDIR)/incl
+TLQLIBDIR=\$(TLQHOMEDIR)/lib
+TLQLIB=-ltl_api
+USRLIB = -lswbase -lswlsn -lswpack -L\$(JVMLIBDIR) -ljvm -L\$(NIOLIBDIR) -lnio
+TARGETS2 = tlqla.so
+OBJS = tlq_pub.o tlqla.o
+TARGETS1 = tlqcall.so
+OBJS1 = tlq_pub.o tlqcall.o
+TARGETS = \$(TARGETS2) \$(TARGETS1)
+all: \$(TARGETS) clean
+.PHONY : compiler
+compiler:
+	\$(CC)  \$(CFLAGS) \$(APPINCLUDE) -c \$(CBJS)
+	
+\$(TARGETS2):\$(OBJS)
+	\$(LD) -o \$@ \$(OBJS) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB) -L\$(TLQLIBDIR) \$(TLQLIB)
+	@rm -f \$(PLGDIR)/\$@
+	@rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+
+\$(TARGETS1):\$(OBJS1)
+	\$(LD) -o \$@ \$(OBJS1) \$(APPLIBDIR) -L\$(PLGDIR) \$(USRLIB) -L\$(TLQLIBDIR) \$(TLQLIB)
+	@rm -f \$(PLGDIR)/\$@
+	@rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+
+.SUFFIXES: .c .o .so
+.c.o:
+	\$(CC) \$(CFLAGS)  -D__SW_USE_JMS__ \$(APPINCLUDE) -I\$(JAVA_HOME)/include -I\$(JAVA_HOME)/include/linux  -I\$(TLQINCLUDEDIR) -c \$*.c
+
+clean:
+	rm -f *.*o
+	
+END
+}
+#############################sunlink#######################
+sun_fun()
+{
+mkdir -p $CONDIR/sunlink
+cat << END > $CONDIR/sunlink/Makefile 
+	
+include $MAKEDIR/sw.env
+
+SUNLINKHOME=$SUNDIR
+BINDIR = \$(SWHOME)/bin
+PLGDIR = \$(SWHOME)/plugin
+
+USERLIB = -lswpack  -lswlsn -lswbase -ldl
+SUNLIBS = -lcommkey -lSDKcomm -lSDKdb -lSDKi18n -lSDKipc -lSDKpub -lSDKsecu -lSDKxml -lcrypto
+
+OBJS1 = suncli.o
+OBJS2 = sunsvr.o
+OBJS3 = sunsc.o
+OBJS4 = sunss.o
+
+TARGET1 = suncli
+TARGET2 = sunsvr
+TARGET3 = sunsc.so
+TARGET4 = sunss.so
+
+TARGETS = \$(TARGET1) \$(TARGET2) \$(TARGET3) \$(TARGET4)
+all:   \$(TARGETS) clean
+
+\$(TARGET1):\$(OBJS1)
+	\$(CC) \$(CFLAGS) -o \$@ \$(OBJS1) \$(APPLIBDIR) \$(USERLIB) -L\$(SUNLINKHOME)/lib \$(SUNLIBS)
+	@rm -f \$(BINDIR)/\$@
+	@rm -f \$(BINDIR)/\$@.\$(VERSION)
+	mv \$@ \$(BINDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(BINDIR)/\$@
+	echo "\$@ is ok!"
+
+\$(TARGET2):\$(OBJS2)
+	\$(CC) \$(CFLAGS) -o \$@ \$(OBJS2) \$(APPLIBDIR) \$(USERLIB) -L\$(SUNLINKHOME)/lib \$(SUNLIBS)
+	@rm -f \$(BINDIR)/\$@
+	@rm -f \$(BINDIR)/\$@.\$(VERSION)
+	mv \$@ \$(BINDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(BINDIR)/\$@
+	echo "\$@ is ok!"
+
+\$(TARGET3):\$(OBJS3)
+	\$(LD) -o \$@ \$(OBJS3) \$(APPLIBDIR) \$(USERLIB) -L\$(SUNLINKHOME)/lib \$(SUNLIBS)
+	@rm -f \$(PLGDIR)/\$@
+	@rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+
+\$(TARGET4):\$(OBJS4)
+	\$(LD) -o \$@ \$(OBJS4) \$(APPLIBDIR) \$(USERLIB) -L\$(SUNLINKHOME)/lib \$(SUNLIBS)
+	@rm -f \$(PLGDIR)/\$@
+	@rm -f \$(PLGDIR)/\$@.\$(VERSION)
+	mv \$@ \$(PLGDIR)/\$@.\$(VERSION)
+	@ln -s \$@.\$(VERSION) \$(PLGDIR)/\$@
+	@echo "\$@ is OK!"
+
+.SUFFIXES: .c .o .so
+.c.o:
+	\$(CC) \$(CFLAGS) \$(APPINCLUDE) -c \$*.c -I\$(SUNLINKHOME)/include
+
+clean:
+	rm -f *.*o
+	
+END
+}
+###########################################################
+JMQ()
+{
+	echo "Do you want use jmq[Y/N]?"
+	read m
+	if [ "$m" = "Y" -o "$m" = "y" ];then
+		MQFLAG="JMQ"
+	fi
+}
+
+JTLQ()
+{
+	echo "Do you want use jtlq[Y/N]?"
+	read m
+	if [ "$m" = "Y" -o "$m" = "y" ];then
+		TLQFLAG="JTLQ"
+	fi
+}
+
+for DIR in $DIRLIST
+do
+	case $DIR in
+		ORACLE_HOME)	
+			oracle_fun
+		;;
+		DB2_HOME)	
+			db2_fun
+		;;
+		INFORMIXDIR)
+			informix_fun
+		;;
+		TUXDIR)
+			tux_fun
+			tuxf_fun
+		;;
+		TUXFILEDIR)
+			tuxf_fun
+		;;
+		TUXDIR2)
+			tux_fun
+		;;
+		MQDIR)
+			
+			JMQ
+			mqcom_fun
+			if [ -n "$MQFLAG" ];then
+				jmq_fun
+			fi
+			mq_fun
+			mqx_fun
+		;;
+		JMQDIR)
+			jmq_fun
+		;;
+		MQCDIR)
+			mq_fun
+		;;
+		
+		MQCOMDIR)
+			mqcom_fun
+		;;
+		
+		TEADIR)
+			tea_fun
+			teaf_fun
+		;;
+		TEAFILEDIR)
+			teaf_fun
+		;;
+		TEADIR2)
+			tea_fun
+		;;
+		CICSDIR)
+			cics_fun
+		;;
+		TLQDIR)
+			JTLQ
+			if [ -z "$TLQFLAG" ];then
+				tlq_fun
+			else
+				jtlq_fun
+			fi
+		;;
+		SUNDIR)
+			sun_fun
+		;;
+	 esac
+done	
+
+####################Major Makefile###################
+for DIR in $DIRLIST
+do
+	case $DIR in
+		ORACLE_HOME)
+			OBJORA="swflowora"
+		;;
+		DB2_HOME)
+			OBJDB2="swflowdb2"
+		;;
+		INFORMIXDIR)
+			OBJINF="swflowinf"
+		;;
+		TUXDIR)
+			OBJTUXALL="tux"
+		;;
+		TUXFILEDIR)
+			OBJTUXF="tuxf"
+		;;
+		TUXDIR2)
+			OBJTUX="tux"
+		;;
+		TEAFILEDIR)
+			OBJTEAF="teaf"
+		;;
+		TEADIR2)
+			OBJTEA="tea"
+		;;
+		MQDIR)
+			OBJMQ="mq"
+		;;
+		MQCDIR)
+			OBJMQC="mqc"
+		;;
+		JMQDIR)
+			OBJMQJ="jmq"
+		;;
+		MQCOMDIR)
+			OBJMQCOM="mqcom"
+		;;
+		TEADIR)
+			OBJTEAALL="tea"
+		;;
+		CICSDIR)
+			OBJCICS="cics"
+		;;
+		TLQDIR)
+			OBJTLQ="tlq"
+		;;
+		SUNDIR)
+			OBJSUN="sunlink"
+		;;
+	esac
+done
+
+cat << END > Makefile
+
+all: $OBJTUX $OBJTUXF $OBJTEAF $OBJTUXALL $OBJTEAALL $OBJORA $OBJDB2 $OBJINF $OBJMQ $OBJTEA $OBJCICS $OBJTLQ $OBJSUN $OBJMQC $OBJMQJ $OBJMQCOM
+
+END
+
+if [ "$OBJORA" = "swflowora" ];then
+cat << END >> Makefile
+swflowora:
+	cd $DATADIR/ora && make $files
+
+END
+fi
+if [ "$OBJDB2" = "swflowdb2" ];then
+cat << END >> Makefile
+swflowdb2:
+	cd $DATADIR/odbc && make $files
+
+END
+fi
+
+if [ "$OBJINF" = "swflowinf" ];then
+cat << END >> Makefile
+swflowinf:
+	cd $DATADIR/ifx && make  $files
+	
+END
+fi
+
+if [ "$OBJTUXALL" = "tux" ];then
+cat << END >> Makefile
+tux:
+	cd $CONDIR/tux && make $files
+	cd $CONDIR/file/tuxf && make $files
+END
+fi
+
+if [ "$OBJTUXF" = "tuxf" ];then
+cat << END >> Makefile
+tuxf:
+	cd $CONDIR/file/tuxf && make $files
+END
+fi
+
+if [ "$OBJTUX" = "tux" ];then
+cat << END >> Makefile
+tux:
+	cd $CONDIR/tux && make $files
+END
+fi
+
+if [ "$OBJTEAALL" = "tea" ];then
+cat << END >> Makefile
+tea:
+	cd $CONDIR/tea && make  $files
+	cd $CONDIR/file/teaf && make $files
+END
+fi
+
+if [ "$OBJTEAF" = "teaf" ];then
+cat << END >> Makefile
+teaf:
+	cd $CONDIR/file/teaf && make $files
+END
+fi
+
+if [ "$OBJTEA" = "tea" ];then
+cat << END >> Makefile
+tea:
+	cd $CONDIR/tea && make $files
+END
+fi
+
+if [ "$OBJMQ" = "mq" ]; then
+	if [ -n "$MQFLAG" ];then
+cat << END >> Makefile
+mq:
+	cd $CONDIR/mq/com && make
+	cd $CONDIR/mq/mqc && make $files
+	cd $CONDIR/mq/jmq && make $files
+	cd $CONDIR/mq/jmq/java && javac -d $SWHOME/plugin MqBase.java
+END
+	else
+cat << END >> Makefile
+mq:
+	cd $CONDIR/mq/com && make
+	cd $CONDIR/mq/mqc && make $files
+	cd $CONDIR/mq/cmqx && make $files
+END
+	fi
+fi
+
+if [ "$OBJMQC" = "mqc" ];then
+cat << END >> Makefile
+mqc:
+	cd $CONDIR/mq/mqc && make $files
+END
+fi
+
+if [ "$OBJMQJ" = "jmq" ];then
+cat << END >> Makefile
+jmq:
+	cd $CONDIR/mq/jmq && make $files
+	cd $CONDIR/mq/jmq/java && javac -d $SWHOME/plugin MqBase.java
+END
+fi
+
+if [ "$OBJMQCOM" = "mqcom" ];then
+cat << END >> Makefile
+mqcom:
+	cd $CONDIR/mq/com && make $files
+END
+fi
+
+if [ "$OBJCICS" = "cics" ];then
+cat << END >> Makefile
+cics:
+	cd $CONDIR/cics && make $files
+END
+fi
+
+if [ "$OBJTLQ" = "tlq" ];then
+cat << END >> Makefile
+tlq:
+	cd $CONDIR/tlq && make $files
+END
+fi
+
+if [ "$OBJSUN" = "sunlink" ];then
+cat << END >> Makefile
+sunlink:
+	cd $CONDIR/sunlink && make $files
+END
+fi
+
+cat << END > $SWHOME/src/incl_pub/pub_autoconfig.h
+
+#ifndef __PUB_CONFIG_H__
+#define __PUB_CONFIG_H__
+
+/*this file is build by auto compile */
+
+#ifndef SW_SYS_NERR
+#define SW_SYS_NERR 100
+#endif
+
+
+#ifndef SW_PRDT_LSN_MAX 
+#define SW_PRDT_LSN_MAX 10
+#endif
+
+#ifndef SW_LSN_PRDT_MAX 
+#define SW_LSN_PRDT_MAX 10
+#endif
+
+#define LSN_MAX_DEFAULT 6
+#define SVR_MAX_DEFAULT 10
+#define PRDT_MAX_DEFAULT 16
+#define PRO_MAX_DEFAULT 100
+#define SESSION_MAX_DEFAULT 1000
+#define JOB_MAX_DEFAULT  20
+#define DB_MAX_DEFAULT  20
+#define SCANTIME_DEFAULT  12
+#define SHAREPOOL_DEFAULT 512*1024*1024
+#define CFGSHMSIZE  2*1024*1024
+#define RUNSHMSIZE  8*1024*1024
+#define SEMSIZE   128
+#define SEQS_DEFAULT 32
+#define LOG_FILE_SIZE_DEF 8*1024*1024
+
+
+#endif
+
+END

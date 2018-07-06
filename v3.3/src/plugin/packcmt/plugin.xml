@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="GBK"?>
+<CBM>
+  <TYPE_ALYZ>
+    <ANALYZE>
+      <ITEM NAME="packcmt_processor" CFG="ibps.xml" LIB="libswpackcmt.so" FUNCTION="iPkgToSwitchPkgCmt">
+        <CHECK BEGIN="0" LENGTH="3" INCLUDE="{1:" />
+      </ITEM>
+      <ITEM NAME="xml_processor" CFG="ibps.xml">
+      </ITEM>
+    </ANALYZE>
+    <INTEGRATE>
+      <ITEM NAME="packcmt_processor" CFG="ibps.xml" LIB="libswpackcmt.so" FUNCTION="iSwitchToPkgPkgCmt">
+        <CHECK NAME="$pkgtype" INCLUDE="1" />
+      </ITEM>
+      <ITEM NAME="xml_processor" CFG="ibps.xml">
+      </ITEM>
+    </INTEGRATE>
+  </TYPE_ALYZ>
+</CBM>

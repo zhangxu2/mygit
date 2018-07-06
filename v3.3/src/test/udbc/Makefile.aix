@@ -1,0 +1,31 @@
+all: test
+
+CC = cc
+ESQL = $(INFORMIXDIR)/bin/esql
+
+CFLAGS = -q64 #-g -qcpluscmt -brtl
+
+INCLUDE = -I../../incl -I../com 
+
+
+LIB_PATH = -L../../lib \
+		-L$(INFORMIXDIR)/lib \
+		-L$(INFORMIXDIR)/lib/esql
+
+LIB_NAME = -ldb
+
+OBJS = test.o 
+TARGET = test
+
+.PHONY: all clean
+
+all: $(TARGET)
+$(TARGET): $(OBJS)
+	$(ESQL) -q64 -o $(TARGET) $(OBJS) $(INCLUDE) $(LIB_PATH) $(LIB_NAME)
+	rm -fr $(OBJS)
+
+.SUFFIXES: .c .o
+.c.o:
+	$(CC) $(CFLAGS) $(INCLUDE) -c $*.c
+clean:
+	rm -f $(TARGET) $(OBJS)

@@ -1,0 +1,80 @@
+#!/bin/sh
+
+bakdir=$HOME/backup
+if [ ! -d "$bakdir" ];then
+	mkdir -p $bakdir
+fi
+
+function getbakday {
+	num=$2
+	year=`expr $1 / 10000`
+	month=`expr $1 / 100 % 100`
+	day=`expr $1 % 100`
+
+	num=`expr $day - $num`	
+	while [ $num -lt 1 ]
+	do
+		if [ -n "$(echo $month |grep -E '1|2|4|6|8|9|11')" ];then
+			month=`expr $month - 1`
+			num=`expr 31 + $num`
+			if [ $month -lt 1 ];then
+				month=12
+				year=`expr $year - 1`
+			fi
+			continue
+		fi
+
+		if [ -n "$(echo $month |grep -E '5|7|10|12')" ];then
+			month=`expr $month - 1`
+			num=`expr $num + 30`
+			continue
+		fi
+	
+		if [ $month -eq 3 ];then
+			if [ $year%4 -eq 0 -a $year%100 -eq 0 -o $year%400 -eq 0 -a $month -eq 3 ];then
+				month=`expr $month - 1`
+				num=`expr $num + 29`
+			else
+				month=`expr $month - 1`
+				num=`expr $num + 28`
+			fi
+			continue
+		fi
+	done
+
+	maxdate=`expr $year \* 10000 + $month \* 100 + $num`
+	print $maxdate
+}
+
+nowdate=`date +%Y%m%d`
+bakdate=`getbakday $nowdate 1`
+
+logbak=$SWWORK/log
+datbak=$SWWORK/dat
+tmpbak=$SWWORK/tmp
+
+mkdir -p $bakdir/$bakdate
+
+cd $SWWORK
+tar -cf $bakdir/$bakdate/log.tar log >/dev/null 2>&1
+gzip -f $bakdir/$bakdate/log.tar
+find $logbak ! -type d -exec rm -f {} \;
+
+tar -cf $bakdir/$bakdate/dat.tar dat >/dev/null 2>&1
+gzip -f $bakdir/$bakdate/dat.tar
+find $datbak ! -name "*.flist" -a ! -type d -exec rm -f {} \;
+
+tar -cf $bakdir/$bakdate/tmp.tar tmp >/dev/null 2>&1
+gzip -f $bakdir/$bakdate/tmp.tar
+find $tmpbak ! -name "monitor.log" -a ! -name "mon_error.log"\
+ -a ! -name ".*.fifo" -a ! -name ".*.file" -a ! -type d -exec rm -f {} \;
+
+maxdate=`getbakday $bakdate 3`
+
+cd $bakdir
+for file in `ls`
+do
+	if [ $file -lt $maxdate ];then
+		rm -rf $file
+	fi
+done

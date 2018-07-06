@@ -1,0 +1,17 @@
+<CBM PKGTYPE="XML" >
+        <ANALYZE>
+                <PACKAGE RESPCD=".root.return">
+                        <ITEM NAME="#pkglen"     TYPE="n4" />
+                        <ITEM NAME="#pkgtype"     TYPE="n3" />
+                </PACKAGE>
+        </ANALYZE>
+        <INTEGRATE>
+                <PACKAGE RESPCD=".root.return">
+                        <ITEM NAME="#pkglen"     TYPE="n4" FLAG="1" />
+                        <ITEM NAME="#pkgtype"     TYPE="n3" FLAG="1" />
+                </PACKAGE>
+                <LASTWORK>
+                        <ITEM NAME="#pkglen" LENGTH="[0..3]" MYSELF="FALSE" />
+                </LASTWORK>
+        </INTEGRATE>
+</CBM>

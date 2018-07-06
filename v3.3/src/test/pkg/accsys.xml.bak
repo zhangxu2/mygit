@@ -1,0 +1,21 @@
+<?xml version= "10" encoding= "GBK" ?>
+<CBM>
+	<TYPE_ALYZ>
+		<ANALYZE>
+			<ITEM NAME="sep_processor" CFG="sep.xml" >
+				<CHECK BEGIN="8" LENGTH="2" INCLUDE="US" />
+			</ITEM>
+			<ITEM NAME="8583_processor" CFG="accsys.xml" >
+				<CHECK BEGIN="8" LENGTH="2" INCLUDE="AS" />
+			</ITEM>
+		</ANALYZE>
+		<INTEGRATE>
+			<ITEM NAME="8583_processor" CFG="accsys.xml" >
+				<CHECK NAME="#chnl_no" INCLUDE="AS" />
+			</ITEM>
+			<ITEM NAME="sep_processor" CFG="sep.xml" >
+				<CHECK NAME="#chnl_no" INCLUDE="US" />
+			</ITEM>
+                </INTEGRATE>
+	</TYPE_ALYZ>
+</CBM>

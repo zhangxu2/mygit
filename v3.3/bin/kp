@@ -1,0 +1,40 @@
+#################################################################
+#文件:kp                                                        #
+#功能:杀掉进程                                                  #
+#使用:kp PROCESS                                                #
+#	  PROCESS可以是进程的名字或缩写，也可以是一个列表           #
+#作者:石升辉                                                    #
+#日期:2004.6.8                                                  #
+#################################################################
+if [ $# = 0 ]
+then
+	echo Usage: kp PROCESS
+	exit
+fi
+if [ "$1" = "-u" ]
+then
+	ME="$2"
+	shift 2
+else
+	ME=$USER
+fi
+for PROCNAME in $*
+do
+	ps -ef |grep "$PROCNAME"|grep $ME |grep -v grep |grep -v kp
+done
+echo "Kill all these process(y/n):\c"
+read answer
+if [ "$answer" != "y" ] && [ "$answer" != "Y" ]
+then
+	exit 
+fi
+for PROCNAME in $*
+do
+	PPS=`ps -ef|grep "$PROCNAME"|grep $ME |grep -v grep|grep -v vi|grep -v vim |awk {'print $2'}`
+	for PROCE in $PPS
+	do
+		kill -9 $PROCE
+	done
+done
+echo "....end"
+
